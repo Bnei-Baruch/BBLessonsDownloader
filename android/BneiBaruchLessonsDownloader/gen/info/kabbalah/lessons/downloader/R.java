@@ -26,10 +26,10 @@ public final class R {
         public static final int icon=0x7f020004;
     }
     public static final class id {
-        public static final int Donate=0x7f080007;
-        public static final int LinearLayout1=0x7f080004;
-        public static final int btnCheckNow=0x7f080005;
-        public static final int btnCheckYesterday=0x7f080006;
+        public static final int Donate=0x7f080004;
+        public static final int LinearLayout1=0x7f080005;
+        public static final int btnCheckNow=0x7f080006;
+        public static final int btnCheckYesterday=0x7f080007;
         public static final int checkNow=0x7f080009;
         public static final int fileLabel=0x7f080003;
         public static final int fileListId=0x7f080008;

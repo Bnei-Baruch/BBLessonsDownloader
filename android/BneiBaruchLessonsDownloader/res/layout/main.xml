@@ -3,7 +3,14 @@
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 
-	<RelativeLayout android:id="@+id/LinearLayout1"
+		<Button
+		    android:id="@+id/Donate"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:onClick="onDonateClick"
+		    android:text="@string/donate" />
+
+    	<RelativeLayout android:id="@+id/LinearLayout1"
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="horizontal" android:layout_width="match_parent"
 		android:layout_height="wrap_content">
@@ -21,14 +28,6 @@
 			android:layout_height="wrap_content" 
 			android:layout_alignParentTop="true" 
 			android:layout_alignParentRight="true"/>
-
-		<Button
-		    android:id="@+id/Donate"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_alignParentTop="true"
-		    android:layout_toLeftOf="@+id/btnCheckYesterday"
-		    android:text="@string/donate" />
 
 	</RelativeLayout>
 

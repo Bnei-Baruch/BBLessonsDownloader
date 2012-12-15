@@ -268,6 +268,12 @@ public class Downloader extends Activity
     	mBoundService.checkNow();
     }
     
+    public void onDonateClick(View v)
+    {
+    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kabbalah.info/donations/"));
+    	startActivity(browserIntent);
+    }
+    
     public void onCheckYesterdayClick(View v)
     {
     	mBoundService.checkYesterday();
