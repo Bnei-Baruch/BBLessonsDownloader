@@ -1,0 +1,6 @@
+*/.DS_Store
+*/*.user
+*/*.exe*
+*/bin/*
+*/obj/*
+*.pdb
