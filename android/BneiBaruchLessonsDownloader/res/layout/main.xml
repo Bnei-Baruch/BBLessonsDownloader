@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<RelativeLayout android:id="@+id/LinearLayout1"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="horizontal" android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<Button android:layout_alignParentLeft="true"
+			android:layout_alignParentTop="true" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="@string/check_now"
+			android:id="@+id/btnCheckNow" android:onClick="onCheckNowClick" />
+		<!-- Button android:layout_width="match_parent" android:layout_height="wrap_content" 
+			android:text="@string/play_now" android:id="@+id/btnPlayNow" android:onClick="onPlayNowClick" 
+			android:enabled="false" android:visible="false"/ -->
+		<Button android:text="@string/check_yesterday" 
+			android:onClick="onCheckYesterdayClick" 
+			android:layout_width="wrap_content" 
+			android:id="@+id/btnCheckYesterday" 
+			android:layout_height="wrap_content" 
+			android:layout_alignParentTop="true" 
+			android:layout_alignParentRight="true"/>
+
+		<Button
+		    android:id="@+id/Donate"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentTop="true"
+		    android:layout_toLeftOf="@+id/btnCheckYesterday"
+		    android:text="@string/donate" />
+
+	</RelativeLayout>
+
+	<ListView android:id="@+id/fileListId"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent" android:layout_height="fill_parent">
+		<!-- Preview: listitem=@layout/file_li -->
+	</ListView>
+
+</LinearLayout>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="lang_names">
+		<item>Hebrew</item>
+		<item>English</item>
+		<item>Russian</item>
+		<item>Spanish</item>
+		<item>German</item>
+		<item>Italian</item>
+		<item>French</item>
+		<item>Turkish</item>
+		<item>Swedish</item>
+	</string-array>
+	<string-array name="lang_codes">
+		<item>heb</item>
+		<item>eng</item>
+		<item>rus</item>
+		<item>spa</item>
+		<item>ger</item>
+		<item>ita</item>
+		<item>fre</item>
+		<item>trk</item>
+		<item>swe</item>
+	</string-array>
+	<string-array name="remove_files_names">
+		<item>Never</item>
+		<item>Every Two Days</item>
+		<item>Every Five Days</item>
+		<item>Every Two Weeks</item>
+	</string-array>
+	<string-array name="remove_files_codes">
+		<item>0</item>
+		<item>2</item>
+		<item>5</item>
+		<item>14</item>
+	</string-array>
+	<string-array name="check_shedule_names">
+		<item>Never</item>
+		<item>Check Every 3 Hr</item>
+	</string-array>
+	<string-array name="check_shedule_values">
+		<item>0</item>
+		<item>3</item>
+	</string-array>
+</resources>

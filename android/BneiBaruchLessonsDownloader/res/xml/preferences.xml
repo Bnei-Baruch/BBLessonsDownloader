@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<ListPreference android:title="@string/language"
+		android:key="language" android:entries="@array/lang_names"
+		android:entryValues="@array/lang_codes" android:dialogTitle="@string/language"
+		android:defaultValue="heb" />
+	<CheckBoxPreference android:title="@string/download_mp3"
+		android:key="mp3_low" android:defaultValue="true"
+		android:summaryOn="@string/download_low_quality_audio"
+		android:summaryOff="@string/don_t_download_low_quality_audio" />
+	<!-- CheckBoxPreference android:title="@string/high_quality"
+		android:key="mp3_high" android:defaultValue="false"
+		android:summaryOn="@string/download_high_quality_audio"
+		android:summaryOff="@string/don_t_download_high_quality_audio" /-->
+	<CheckBoxPreference android:title="@string/download_mp4"
+		android:key="mp4" android:defaultValue="false" android:summaryOn="@string/download_video"
+		android:summaryOff="@string/don_t_download_video" />
+	<EditTextPreference android:title="@string/local_folder_name"
+		android:defaultValue="@string/morninglessons" android:key="local_folder_name"
+		android:dialogTitle="@string/input_local_folder_name" />
+	<ListPreference android:entries="@array/remove_files_names"
+		android:entryValues="@array/remove_files_codes" android:dialogTitle="@string/delete_old_files"
+		android:title="@string/delete_old_files" android:key="remove_old_files_list" />
+	<CheckBoxPreference
+		android:summaryOff="@string/files_will_be_downoaded_from_the_beginning"
+		android:title="@string/resume_failed_downloads"
+		android:summaryOn="@string/files_will_be_resumed_from_the_point_of_failure"
+		android:key="resume_failed_downloads" android:defaultValue="true" />
+	<ListPreference android:dialogTitle="Select Option"
+		android:title="Automatic Check" android:key="dl_check_schedule"
+		android:entries="@array/check_shedule_names" android:entryValues="@array/check_shedule_values"
+		android:defaultValue="0"></ListPreference>
+	<CheckBoxPreference android:summaryOff="@string/check_wifi_only"
+		android:title="@string/check_cellular" android:summaryOn="@string/check_both"
+		android:key="check_with_cellular" android:defaultValue="false"/>
+	<CheckBoxPreference android:key="proxy_enabled" 
+		android:summaryOff="@string/proxy_disabled" android:summaryOn="@string/proxy_enabled" 
+		android:title="@string/use_http_proxy"/>
+	<EditTextPreference android:title="@string/proxy_host_name"
+		android:key="proxy_host_name" android:dialogTitle="@string/proxy_host_name" 
+		android:dependency="proxy_enabled"/>
+	<EditTextPreference android:title="@string/proxy_port_number"
+		android:key="proxy_port_number" android:dialogTitle="@string/proxy_port_number"
+		android:defaultValue="80" android:dependency="proxy_enabled" android:numeric="integer"/>
+	
+
+</PreferenceScreen>
