@@ -31,6 +31,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -38,21 +39,23 @@ public class DropBoxFileList {
 	final static String uri = "http://upload.kbb1.com/lessondn/%s.txt";
 	//final static String uri = "http://dl.dropbox.com/u/3074981/%s.txt";
 	static List<FileInfo> fileList = null;
+	private static MediaDownloaderService caller;
 
-	public static List<FileInfo> DownLoadFileList(int offset) {
+	public static void startDownLoadFileList(int offset, MediaDownloaderService mediaDownloaderService) {
 
-		try {
-			String flieListXml = downloadFileList(offset);
-			
-			return parseFileListXml(flieListXml);
+		caller = mediaDownloaderService;
+		startDownloadFileList(offset);
+	}
+	
+	public static void pushFileList(String fileListXml) {
+		try {	
+			caller.pushFileList(parseFileListXml(fileListXml));
 		} catch (Exception e) {
 			Log.d("DropBoxFileListDownloader", e.toString());
-			return null;
 		}
 	}
 
-	private static String downloadFileList(int offset) throws MalformedURLException,
-			IOException {
+	private static void startDownloadFileList(int offset) {
 		Calendar today = Calendar.getInstance();
 
 		String title = String
@@ -60,76 +63,99 @@ public class DropBoxFileList {
 						today.get(Calendar.MONTH) + 1,
 						today.get(Calendar.DAY_OF_MONTH) + offset );
 		String sUrl = String.format(uri, title);
-		URL url = new URL(sUrl);
-		if( ! Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).exists())
-			Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdir();
-		File localFileList = new File( Environment.getExternalStoragePublicDirectory(
-				Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separatorChar + title + ".txt");
-		return getUrlTextContent(url, localFileList);
+		URL url = null;
+		try {
+			url = new URL(sUrl);
+			if( ! Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).exists())
+				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdir();
+			File localFileList = new File( Environment.getExternalStoragePublicDirectory(
+					Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separatorChar + title + ".txt");
+			startGetUrlTextContent(url, localFileList);
+		} catch (MalformedURLException e) {
+		}
 	}
 
-	private static String getUrlTextContent(URL url, File localFileList) 
-														throws IOException {
-		/* Open a connection to that URL. */
-		HttpURLConnection ucon = MediaDownloaderService.getConnectionWithProxy(url);
-		try {
-			if(localFileList.exists() && localFileList.canRead())
-			{
-				ucon.setIfModifiedSince(localFileList.lastModified());
-			}
-			
-			ucon.setChunkedStreamingMode(4096);
+	private static void startGetUrlTextContent(final URL url, final File localFileList) {
+		
+		class GetFileListAT extends AsyncTask<URL, Void, String> {
+			@Override
+			protected String doInBackground(URL... params) {
+				/* Open a connection to that URL. */
+				try {
+					HttpURLConnection ucon = MediaDownloaderService.getConnectionWithProxy(url);
+					try {
+						if(localFileList.exists() && localFileList.canRead())
+						{
+							ucon.setIfModifiedSince(localFileList.lastModified());
+						}
+						
+						ucon.setChunkedStreamingMode(4096);
+				
+						/*
+						 * Define InputStreams to read from the URLConnection.
+						 */
+				
+						InputStream is = ucon.getInputStream();
+			/*			if (!url.getHost().equals(ucon.getURL().getHost())) {
+							// Redirected ! Kick the user out to the browser to sign on?
+							ShowBrowserLogOn(ucon);
+						}*/
+						if(is == null && ! localFileList.exists())
+						{
+							return null;
+						}
+						long lastModified = ucon.getLastModified();
+						byte[] content = null;
+						if(lastModified != 0 && lastModified > localFileList.lastModified()
+								|| lastModified == 0)
+						{
+							content = readToString(is);
+							if(content.length <= 0 && ! localFileList.exists())
+							{
+								return null;
+							}
 	
-			/*
-			 * Define InputStreams to read from the URLConnection.
-			 */
+							if(localFileList.length() != content.length)
+							{
+								OutputStream os = new FileOutputStream(localFileList);
+								try {
+									os.write(content);
+								} finally {
+									os.close();
+								}
+							}
 	
-			InputStream is = ucon.getInputStream();
-/*			if (!url.getHost().equals(ucon.getURL().getHost())) {
-				// Redirected ! Kick the user out to the browser to sign on?
-				ShowBrowserLogOn(ucon);
-			}*/
-			if(is == null && ! localFileList.exists())
-			{
-				return null;
-			}
-			long lastModified = ucon.getLastModified();
-			byte[] content = null;
-			if(lastModified != 0 && lastModified > localFileList.lastModified()
-					|| lastModified == 0)
-			{
-				content = readToString(is);
-				if(content.length <= 0 && ! localFileList.exists())
+							return new String(content);
+						} else if(localFileList.exists()){
+							byte[] buffer = new byte[(int) localFileList.length()];
+							FileInputStream file = new FileInputStream(localFileList);
+							try {
+								file.read(buffer);
+							} finally {
+								if(file != null)
+									file.close();
+							}
+							return new String(buffer);
+						}
+					} catch (Exception e) {
+						Log.d("DropBoxFileList", "Cannot download file list", e);
+					} finally {
+						ucon.disconnect();
+					}
+				} catch (IOException e)
 				{
 					return null;
 				}
-
-				if(localFileList.length() != content.length)
-				{
-					OutputStream os = new FileOutputStream(localFileList);
-					try {
-						os.write(content);
-					} finally {
-						os.close();
-					}
-				}
-
-				return new String(content);
-			} else if(localFileList.exists()){
-				byte[] buffer = new byte[(int) localFileList.length()];
-				FileInputStream file = new FileInputStream(localFileList);
-				try {
-					file.read(buffer);
-				} finally {
-					if(file != null)
-						file.close();
-				}
-				return new String(buffer);
+				return null;
 			}
-		} finally {
-			ucon.disconnect();
+			protected void onPostExecute(String ret)
+			{
+				pushFileList(ret);
+			}
 		}
-		return null;
+		
+		new GetFileListAT().execute(url);
+		
 	}
 
 	private static byte[] readToString(InputStream is) throws IOException {

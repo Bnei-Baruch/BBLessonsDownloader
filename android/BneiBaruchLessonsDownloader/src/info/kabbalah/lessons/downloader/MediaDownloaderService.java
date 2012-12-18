@@ -246,12 +246,14 @@ public class MediaDownloaderService	extends android.app.Service {
 		return downloader;
 	}
 	
-	private boolean downloadFileList(int offset) {
-		List<FileInfo> fileList = DropBoxFileList.DownLoadFileList(offset);
+	private void downloadFileList(int offset) {
+		DropBoxFileList.startDownLoadFileList(offset, this);
+	}
+	
+	public void pushFileList(List<FileInfo> fileList) {
     	if(fileList == null)
     	{
     		showFileNotFoundToast();
-    		return false;
     	}
     	boolean bFileAdded = false;
     	for(FileInfo info : fileList)
@@ -270,7 +272,11 @@ public class MediaDownloaderService	extends android.app.Service {
 				bFileAdded = true;
     		}
     	}
-		return bFileAdded;
+		if(bFileAdded)
+		{
+			startDownload();
+		} else
+			showFileNotFoundToast();
 	}
 
 	private boolean included(String name,
@@ -330,12 +336,7 @@ public class MediaDownloaderService	extends android.app.Service {
 	}
 
 	private void checkFilesForOffset(int offset) {
-		boolean bFileAdded = downloadFileList(offset);
-		if(bFileAdded)
-		{
-			startDownload();
-		} else
-			showFileNotFoundToast();
+		downloadFileList(offset);
 	}
 	
 	private void showFileNotFoundToast() {
