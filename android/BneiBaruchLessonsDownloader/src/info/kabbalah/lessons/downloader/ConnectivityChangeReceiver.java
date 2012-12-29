@@ -20,11 +20,11 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
 		    }
 		} else if(intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
 		    NetworkInfo networkInfo = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
-		    if(networkInfo.getType() == ConnectivityManager.TYPE_WIFI && ! networkInfo.isConnected()) {
+		    if(networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI && ! networkInfo.isConnected()) {
 		        // Wifi is disconnected
 		        Log.d("LessonDownloader", "Wifi is disconnected: " + String.valueOf(networkInfo));
 		    }
-		    if(networkInfo.isConnected())
+		    if(networkInfo != null && networkInfo.isConnected())
 		    {
 				Intent srvc = new Intent(
 						 MediaDownloaderService.INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES);

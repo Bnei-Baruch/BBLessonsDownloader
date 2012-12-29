@@ -239,12 +239,12 @@ public class DropBoxFileList {
 						return false;
 				}
 			});
-			
-			for(final File f : toDelete)
-			{
-				if(f.exists())
-					f.delete();
-			}
+			if(toDelete != null)
+				for(final File f : toDelete)
+				{
+					if(f.exists())
+						f.delete();
+				}
 		} else {
 			
 		}
