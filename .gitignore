@@ -7,3 +7,7 @@
 *.suo
 */bin/*
 */obj/*
+*.class
+*/bin/*
+**/bin/**.exe*
+**/obj/**/*
