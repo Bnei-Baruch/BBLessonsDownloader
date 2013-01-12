@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_2BD5295053074EAD9DEEE047D41BE2BD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9987A3F7BC944EDEBB09485C879D9BEF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -35,6 +41,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_9987A3F7BC944EDEBB09485C879D9BEF"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_2BD5295053074EAD9DEEE047D41BE2BD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -164,7 +176,7 @@
         {
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B5F21D111BE940CA8364653A68246DF0"
             {
-            "SourcePath" = "8:..\\BBDailyLessonsDownloader\\images\\favicon.ico"
+            "SourcePath" = "8:\\\\psf\\Home\\Projects\\BB\\LessonsDownloader\\BBLessonsDownloader\\windows\\BBDailyLessonsDownloader\\BBDailyLessonsDownloader\\images\\favicon.ico"
             "TargetName" = "8:favicon.ico"
             "Tag" = "8:"
             "Folder" = "8:_34D8C3B87675477A86F31F5272E91F3F"
@@ -250,7 +262,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:BB Daily Lessons Downloader"
         "ProductCode" = "8:{F286DD32-CA5F-41F9-A87B-01C9476F624B}"
-        "PackageCode" = "8:{FF280DFA-222F-4C4F-9C5C-67FDB803A024}"
+        "PackageCode" = "8:{372B2DBB-206E-49F5-8AFB-3E639E252C6B}"
         "UpgradeCode" = "8:{B228FC48-500B-4C56-B37A-97728447FF8A}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -811,9 +823,37 @@
         }
         "ProjectOutput"
         {
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2BD5295053074EAD9DEEE047D41BE2BD"
+            {
+            "SourcePath" = "8:\\\\psf\\Home\\Projects\\BB\\LessonsDownloader\\BBLessonsDownloader\\windows\\BBDailyLessonsDownloader\\silentInstaller\\obj\\x86\\Debug\\silentInstaller.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_34D8C3B87675477A86F31F5272E91F3F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{056D9D1C-E729-49E6-AADC-E0A41FD6A4D7}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9987A3F7BC944EDEBB09485C879D9BEF"
             {
-            "SourcePath" = "8:..\\BBDailyLessonsDownloader\\obj\\x86\\Release\\BBDailyLessonsDownloader.exe"
+            "SourcePath" = "8:\\\\psf\\Home\\Projects\\BB\\LessonsDownloader\\BBLessonsDownloader\\windows\\BBDailyLessonsDownloader\\BBDailyLessonsDownloader\\obj\\x86\\Debug\\BBDailyLessonsDownloader.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_34D8C3B87675477A86F31F5272E91F3F"
@@ -841,7 +881,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EF29F2B2AA8146618E3B3DD412D7B86A"
             {
-            "SourcePath" = "8:..\\UninstallApp\\obj\\x86\\Release\\UninstallApp.exe"
+            "SourcePath" = "8:\\\\psf\\Home\\Projects\\BB\\LessonsDownloader\\BBLessonsDownloader\\windows\\BBDailyLessonsDownloader\\UninstallApp\\obj\\x86\\Debug\\UninstallApp.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_34D8C3B87675477A86F31F5272E91F3F"

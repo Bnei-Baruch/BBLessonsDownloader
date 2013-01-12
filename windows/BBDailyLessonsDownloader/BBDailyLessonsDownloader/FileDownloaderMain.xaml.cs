@@ -27,14 +27,43 @@ using System.Runtime.Remoting.Contexts;
 using System.Threading;
 using BBDailyLessonsDownloader;
 using System.Web;
+using System.Runtime.InteropServices;
 
 namespace BBLessonsDwnldApp
 {
+
     /// <summary>
     /// Interaction logic for FileDownloaderMain.xaml
     /// </summary>
     public partial class FileDownloaderMain : Window
     {
+        /* We use the Windows Shell function SHMessageBoxCheck, so we have to define this parallel enum of the definitions in winuser.h. */
+
+        public enum MessageBoxCheckFlags : uint
+        {
+            MB_OK = 0x00000000,
+            MB_OKCANCEL = 0x00000001,
+            MB_YESNO = 0x00000004,
+            MB_ICONHAND = 0x00000010,
+            MB_ICONQUESTION = 0x00000020,
+            MB_ICONEXCLAMATION = 0x00000030,
+            MB_ICONINFORMATION = 0x00000040
+        }
+
+        const int IDYES = 6;
+
+        /* The SHMessageBoxCheck() function is a Windows Shell API function that displays a custom messagebox with a "never ask me again" check box.  When the user checks the checkbox, the dialog never shows up again.  The shell API .dll exports this function by ordinal only.  The entrypoint  is ordinal 185 for ASCII and 191 for unicode. */
+
+        [DllImport("shlwapi.dll", EntryPoint = "#185", ExactSpelling = true, PreserveSig = true)]
+        public static extern int SHMessageBoxCheck(
+            [In] IntPtr hwnd,
+            [In] String pszText,
+            [In] String pszTitle,
+            [In] MessageBoxCheckFlags uType,
+            [In] int iDefault,
+            [In] string pszRegVal
+            );
+
         // Creating a new instance of a FileDownloader
         private FileDownloader downloader = new FileDownloader();
         // Creating a new instance of Removable Device Detector
@@ -49,6 +78,8 @@ namespace BBLessonsDwnldApp
         private bool m_removableDownloadInProcess = false;
         private bool m_removableDownloadCompleted = false;
         private bool m_canStartDownloadToRemovable = false;
+
+        Process _installerProcess = null;
         #endregion
 
         private FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog();
@@ -60,6 +91,7 @@ namespace BBLessonsDwnldApp
         private WebBrowserForm webBrowserFrm = null;
         //System.Windows.Forms.Timer timer;
         private System.Timers.Timer timer;
+        private const string installerExecutable = @"silentInstaller.exe";
 
         public FileDownloaderMain()
         {
@@ -187,12 +219,26 @@ namespace BBLessonsDwnldApp
                     reader.Close();
             }
             Version applicationVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            if (applicationVersion.CompareTo(newVersion) < 0)
-            {
-                if (System.Windows.MessageBox.Show("Version " + newVersion.ToString() + " of BB Lesson Downloader is now available, would you like to download it?", "Version Upgrage", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+//            if (applicationVersion.CompareTo(newVersion) < 0)
                 {
-                    System.Diagnostics.Process.Start(downloaderUrl);
-                    System.Environment.Exit(1);
+                if(SHMessageBoxCheck(new WindowInteropHelper(this).EnsureHandle(), 
+                    "Version " + newVersion.ToString() + " of BB Lesson Downloader is now available, would you like to download it?", 
+                    "Version Upgrage", MessageBoxCheckFlags.MB_YESNO, IDYES, "BBLessonsDownloaderUpgradeWarningShow") == IDYES)
+                {
+                    // TODO: Download installation and start it.
+                    String tfn = System.IO.Path.GetTempFileName();
+                    try
+                    {
+
+                        File.Copy(installerExecutable, tfn + ".exe");
+                        _installerProcess = System.Diagnostics.Process.Start(tfn + ".exe " + downloaderUrl);
+                        _installerProcess.Exited += new EventHandler(InstallerEnded);
+
+                    }
+                    catch (Exception e)
+                    {
+                        return;
+                    }
                 }
                 else
                 {
@@ -201,6 +247,11 @@ namespace BBLessonsDwnldApp
             }
         }
 
+        void InstallerEnded(object sender, EventArgs e)
+        {
+            if(_installerProcess.ExitCode == 0)
+                System.Environment.Exit(0);
+        }
 
         #region Components Events Handlers
         private void timer_Tick(object sender, System.EventArgs e)
