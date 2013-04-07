@@ -53,7 +53,7 @@ public class MusicUtils {
 	
     public static long [] getSongIdLikeName(Context context, String name) {
         final String[] ccols = new String[] { MediaStore.Audio.Media._ID };
-        String where = MediaStore.Audio.Media.TITLE + " LIKE ? AND " + 
+        String where = MediaStore.Audio.Media.DISPLAY_NAME + " LIKE ? AND " + 
         MediaStore.Audio.Media.IS_MUSIC + "=1";
         Cursor cursor = query(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 ccols, where, new String[] {name},
