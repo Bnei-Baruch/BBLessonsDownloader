@@ -150,7 +150,8 @@ public class DropBoxFileList {
 			}
 			protected void onPostExecute(String ret)
 			{
-				pushFileList(ret);
+				if(ret != null)
+					pushFileList(ret);
 			}
 		}
 		

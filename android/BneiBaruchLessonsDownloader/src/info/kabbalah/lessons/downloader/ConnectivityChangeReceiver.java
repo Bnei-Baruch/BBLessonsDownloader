@@ -12,6 +12,7 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context ctx, Intent intent) {
+		
 		if(intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
 		    NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 		    if(networkInfo.isConnected()) {
@@ -27,8 +28,12 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
 		    if(networkInfo != null && networkInfo.isConnected())
 		    {
 				Intent srvc = new Intent(
-						 MediaDownloaderService.INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES);
+						 MediaDownloaderService.INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON);
 				ctx.startService(srvc);
+		    } else {
+				Intent srvc = new Intent(
+						 MediaDownloaderService.INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF);
+				ctx.startService(srvc);		    	
 		    }
 		}
 	}

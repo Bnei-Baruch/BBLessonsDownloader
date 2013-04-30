@@ -55,6 +55,10 @@ public class MediaDownloaderService	extends android.app.Service {
 
 	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES = "info.kabbalah.lessons.downloader.CheckFiles";
 
+	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON = "info.kabbalah.lessons.downloader.Network.WiFi.On";
+
+	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF = "info.kabbalah.lessons.downloader.Network.WiFi.Off";
+
 	private ArrayList<FileProcessor> filesToDownload = new ArrayList<FileProcessor>();
 	private ArrayList<FileProcessor> processedFiles = new ArrayList<FileProcessor>();
 
@@ -64,6 +68,8 @@ public class MediaDownloaderService	extends android.app.Service {
     private int PLAY_NOTIFICATION_ID = R.string.local_service_started + 123;
 
 	private WakeLock powerlock;
+
+	private boolean bWifiConnected;
 
 	private static boolean proxyEnabled;
 
@@ -101,26 +107,22 @@ public class MediaDownloaderService	extends android.app.Service {
         Log.i("LocalService", "Received start id " + startId + ": " + intent);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
-        data.readPreferences(this);
-        if(data.checkSchedule == 3)
-        {
-        	// Check Wi-Fi status
-        	if(data.checkWithCellular)
-        	{
-        		checkAll();
-        	} else {
-        		ConnectivityManager connectivity = 
-        			(ConnectivityManager) getSystemService(
-        						Context.CONNECTIVITY_SERVICE);
-        		NetworkInfo activeNetworkInfo = connectivity.getActiveNetworkInfo();
-				if(activeNetworkInfo != null 
-						&& activeNetworkInfo.
-        					getTypeName().compareToIgnoreCase("WIFI") == 0)
-        			checkAll();
-        	}
+        if(intent.getAction().compareTo(INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON) == 0) {
+        	bWifiConnected = true;
+        } else if (intent.getAction().compareTo(INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF) == 0) {
+        	bWifiConnected = false;        	
+        } else if (intent.getAction().compareTo(INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES) == 0) {
+	        data.readPreferences(this);
+	        if(data.checkSchedule == 3)
+	        {
+	        	// Check Wi-Fi status
+	        	if(data.checkWithCellular || bWifiConnected) {
+	        		checkAll();
+	        	}
+	        }
         }
         return START_STICKY;
-    }
+     }
 
     private void checkAll() {
     	retrieveProxySettings();
