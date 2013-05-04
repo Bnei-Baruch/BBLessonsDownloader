@@ -107,11 +107,11 @@ public class MediaDownloaderService	extends android.app.Service {
         Log.i("LocalService", "Received start id " + startId + ": " + intent);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
-        if(intent.getAction().compareTo(INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON) == 0) {
+        if(INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON.compareTo(intent.getAction()) == 0) {
         	bWifiConnected = true;
-        } else if (intent.getAction().compareTo(INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF) == 0) {
+        } else if (INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF.compareTo(intent.getAction()) == 0) {
         	bWifiConnected = false;        	
-        } else if (intent.getAction().compareTo(INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES) == 0) {
+        } else if (INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES.compareTo(intent.getAction()) == 0) {
 	        data.readPreferences(this);
 	        if(data.checkSchedule == 3)
 	        {
