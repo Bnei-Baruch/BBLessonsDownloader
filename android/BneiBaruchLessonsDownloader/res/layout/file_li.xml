@@ -2,7 +2,7 @@
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_height="wrap_content" 
 				android:orientation="vertical" android:layout_width="match_parent">
-		<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+		<TextView 
 					android:id="@+id/fileLabel"
 					android:layout_height="wrap_content"
 					android:text="@string/file_mp3"

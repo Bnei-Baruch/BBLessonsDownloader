@@ -104,6 +104,7 @@ public class MediaDownloaderService	extends android.app.Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+    	if(intent == null) return START_NOT_STICKY;
         Log.i("LocalService", "Received start id " + startId + ": " + intent);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
@@ -113,7 +114,9 @@ public class MediaDownloaderService	extends android.app.Service {
         	this.bWifiConnected = false;        	
         } else if (INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES.compareTo(intent.getAction()) == 0) {
 	        data.readPreferences(this);
-	        if(data.checkSchedule == 3)
+	        long hours = Calendar.getInstance().getTimeInMillis() / 1000 / 60 / 60;
+//	        long hours = Calendar.getInstance().getTimeInMillis() / 1000 / 10;
+	        if(data.checkSchedule != 0 && hours % data.checkSchedule == 0)
 	        {
 	        	// Check WiFi status
 	        	if(data.checkWithCellular || this.bWifiConnected) {
@@ -256,6 +259,7 @@ public class MediaDownloaderService	extends android.app.Service {
     	if(fileList == null)
     	{
     		showFileNotFoundToast();
+    		return;
     	}
     	boolean bFileAdded = false;
     	for(FileInfo info : fileList)

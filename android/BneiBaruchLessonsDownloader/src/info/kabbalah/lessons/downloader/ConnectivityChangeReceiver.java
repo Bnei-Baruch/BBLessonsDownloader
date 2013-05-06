@@ -12,7 +12,7 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context ctx, Intent intent) {
-		
+		Log.d("LessonDownloader", "Coonection Change Received");
 		if(intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
 		    NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 		    if(networkInfo.isConnected()) {
@@ -25,12 +25,12 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
 		        // Wifi is disconnected
 		        Log.d("LessonDownloader", "Wifi is disconnected: " + String.valueOf(networkInfo));
 		    }
-		    if(networkInfo != null && networkInfo.isConnected())
+		    if(networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
 		    {
 				Intent srvc = new Intent(
 						 MediaDownloaderService.INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON);
 				ctx.startService(srvc);
-		    } else {
+		    } else if(networkInfo != null && ! networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
 				Intent srvc = new Intent(
 						 MediaDownloaderService.INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF);
 				ctx.startService(srvc);		    	
