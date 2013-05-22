@@ -32,7 +32,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 public class DropBoxFileList {
@@ -47,7 +46,7 @@ public class DropBoxFileList {
 		startDownloadFileList(offset);
 	}
 	
-	public static void pushFileList(String fileListXml) {
+	public synchronized static void pushFileList(String fileListXml) {
 		try {	
 			caller.pushFileList(parseFileListXml(fileListXml));
 		} catch (Exception e) {
@@ -66,10 +65,10 @@ public class DropBoxFileList {
 		URL url = null;
 		try {
 			url = new URL(sUrl);
-			if( ! Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).exists())
-				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdir();
-			File localFileList = new File( Environment.getExternalStoragePublicDirectory(
-					Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separatorChar + title + ".txt");
+			final File storagePublicDirectory = new File(FileSystemUtilities.getLocalPath());
+			if( ! storagePublicDirectory.exists())
+				storagePublicDirectory.mkdir();
+			File localFileList = new File( storagePublicDirectory.getAbsolutePath() + File.separatorChar + title + ".txt");
 			startGetUrlTextContent(url, localFileList);
 		} catch (MalformedURLException e) {
 		}
@@ -210,7 +209,7 @@ public class DropBoxFileList {
 		final Pattern datepattern = Pattern.compile("[0-9]{8}.txt"); 
 		date.add(Calendar.DAY_OF_YEAR, -nRemoveFiles);
 
-		final File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+		final File dir = new File(FileSystemUtilities.getLocalPath());
 		
 		if(dir != null)
 		{
@@ -246,8 +245,6 @@ public class DropBoxFileList {
 					if(f.exists())
 						f.delete();
 				}
-		} else {
-			
 		}
 	}
 

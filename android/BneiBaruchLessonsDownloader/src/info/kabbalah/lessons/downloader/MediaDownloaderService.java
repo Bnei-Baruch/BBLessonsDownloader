@@ -19,8 +19,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
@@ -365,6 +363,7 @@ public class MediaDownloaderService	extends android.app.Service {
 			}
 		} else {
 			Log.w("deleteFilesOlderThanNdays", "Files were not deleted, directory " + dirWay + " does'nt exist!");
+			directory.mkdirs();
 		}
 	}
 

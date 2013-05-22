@@ -341,9 +341,10 @@ public class Downloader extends Activity
 	}
 
 	private String getFolderPath(Calendar today, int diff) {
+		today.add(Calendar.DAY_OF_YEAR, diff);
 		return String.format(Locale.getDefault(), "%04d-%02d-%02d", today.get(Calendar.YEAR),
 				today.get(Calendar.MONTH) + 1,
-				today.get(Calendar.DAY_OF_MONTH) + diff);
+				today.get(Calendar.DAY_OF_MONTH));
 	}
 
 	public void downloadFailed(FileInfo fileInfo) {
@@ -387,14 +388,14 @@ public class Downloader extends Activity
 	}
 
 	public boolean createPlaylistForTodayFiles() {
-		return createPlaylistForPastNDay(0);
+		return createTodayPlaylist() && createPlaylistForPastNDay(0);
 	}
 
 	public boolean createPlaylistForYesterdayFiles() {
 		return createPlaylistForPastNDay(1);
 	}
 
-	public boolean createPlaylistForPastNDay(int N) {
+	public synchronized boolean createPlaylistForPastNDay(int N) {
 		String folderPath = getFolderPath(Calendar.getInstance(), -N);
 		String like = "%" + folderPath + "%lesson%";
 		long[] songs = MusicUtils.getSongIdLikeName(this, like);
@@ -402,8 +403,23 @@ public class Downloader extends Activity
 		{
 			String playlistName = FileSystemUtilities.folderName + "_" + folderPath;
 			this.todayPlaylist = createPlaylist(playlistName);
-			int plId = idForplaylist(playlistName);
-			
+			int plId = idForplaylist(playlistName);			
+			MusicUtils.addToPlaylist(this, songs, plId);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public synchronized boolean createTodayPlaylist() {
+		String folderPath = getFolderPath(Calendar.getInstance(), 0);
+		String like = "%" + folderPath + "%lesson%";
+		long[] songs = MusicUtils.getSongIdLikeName(this, like);
+		if(songs.length > 0)
+		{
+			String playlistName = "TodayMorningLessons";
+			createPlaylist(playlistName);
+			int plId = idForplaylist(playlistName);			
 			MusicUtils.addToPlaylist(this, songs, plId);
 			return true;
 		} else {

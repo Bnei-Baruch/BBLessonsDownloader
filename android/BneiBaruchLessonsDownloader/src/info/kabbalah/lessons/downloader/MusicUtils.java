@@ -113,16 +113,10 @@ public class MusicUtils {
             cur.moveToFirst();
             int base = cur.getInt(0);
             cur.close();
-//            int numinserted = 0;
             for (int i = 0; i < size; i += 1000) {
                 makeInsertItems(ids, i, 1000, base);
-//                numinserted += resolver.bulkInsert(uri, sContentValuesCache);
                 resolver.bulkInsert(uri, sContentValuesCache);
             }
-//            String message = context.getResources().getQuantityString(
-//                    R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
-//            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-            //mLastPlaylistSelected = playlistid;
         }
     }
 
@@ -135,7 +129,7 @@ public class MusicUtils {
 	public static void cleanOldPlaylists(Context ctx, String folderName, int delta)
 	{
 		Calendar date = Calendar.getInstance();
-		date.add(Calendar.DAY_OF_MONTH, -delta);
+		date.add(Calendar.DAY_OF_YEAR, -delta);
 		Cursor c = query(ctx, MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
 					new String[] {MediaStore.Audio.Playlists._ID, MediaStore.Audio.Playlists.NAME },
 	                MediaStore.Audio.Playlists.NAME + " LIKE ? " /*+ " AND " + MediaStore.Audio.Playlists.DATE_MODIFIED + " < ? "*/,
