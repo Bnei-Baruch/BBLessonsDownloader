@@ -2,11 +2,14 @@ package info.kabbalah.lessons.downloader;
 
 import java.io.File;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Node;
 
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.format.Time;
 
 public class FileInfo  implements Parcelable {
 	private String name;
@@ -24,6 +27,16 @@ public class FileInfo  implements Parcelable {
 		date = file.getAttributes().getNamedItem("Date").getNodeValue();
 		url = file.getAttributes().getNamedItem("Url").getNodeValue();
 	}
+
+    public FileInfo(String _date, JSONObject file) throws JSONException {
+        date= _date;
+        name= file.getString("name");
+        url= file.getString("url");
+        fileSize= file.getLong("size");
+        Time mtime= new Time();
+        mtime.parse3339(file.getString("updated").replace(' ', 'T').substring(0, 19)+"Z");
+        lastModified= mtime.toMillis(false);
+    }
 
 	public FileInfo(Parcel in) {
 		name = in.readString();

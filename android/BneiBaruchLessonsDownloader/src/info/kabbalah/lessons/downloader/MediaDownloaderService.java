@@ -34,7 +34,7 @@ import android.widget.Toast;
 public class MediaDownloaderService	extends android.app.Service {
     private NotificationManager mNM;
     
-	private DownloaderPreferenceData data = new DownloaderPreferenceData();
+	public DownloaderPreferenceData data = new DownloaderPreferenceData();
     
     WifiLock wifilock;
 	DownloadFilesTask task = null;

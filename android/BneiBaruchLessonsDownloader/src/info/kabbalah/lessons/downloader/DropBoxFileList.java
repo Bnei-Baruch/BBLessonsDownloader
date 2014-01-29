@@ -25,6 +25,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.util.ByteArrayBuffer;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -35,7 +38,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 public class DropBoxFileList {
-	final static String uri = "http://upload.kbb1.com/lessondn/%s.txt";
+	final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
 	//final static String uri = "http://dl.dropbox.com/u/3074981/%s.txt";
 	static List<FileInfo> fileList = null;
 	private static MediaDownloaderService caller;
@@ -46,9 +49,9 @@ public class DropBoxFileList {
 		startDownloadFileList(offset);
 	}
 	
-	public synchronized static void pushFileList(String fileListXml) {
+	public synchronized static void pushFileList(String fileListJson) {
 		try {	
-			caller.pushFileList(parseFileListXml(fileListXml));
+			caller.pushFileList(parseFileListJson(fileListJson));
 		} catch (Exception e) {
 			Log.d("DropBoxFileListDownloader", e.toString());
 		}
@@ -61,14 +64,14 @@ public class DropBoxFileList {
 				.format(Locale.getDefault(),"%04d%02d%02d", today.get(Calendar.YEAR),
 						today.get(Calendar.MONTH) + 1,
 						today.get(Calendar.DAY_OF_MONTH) + offset );
-		String sUrl = String.format(uri, title);
+		String sUrl = String.format(uri, title, caller.data.selectedLanguage.toUpperCase(Locale.US));
 		URL url = null;
 		try {
 			url = new URL(sUrl);
 			final File storagePublicDirectory = new File(FileSystemUtilities.getLocalPath());
 			if( ! storagePublicDirectory.exists())
 				storagePublicDirectory.mkdir();
-			File localFileList = new File( storagePublicDirectory.getAbsolutePath() + File.separatorChar + title + ".txt");
+			File localFileList = new File( storagePublicDirectory.getAbsolutePath() + File.separatorChar + title + caller.data.selectedLanguage + ".txt");
 			startGetUrlTextContent(url, localFileList);
 		} catch (MalformedURLException e) {
 		}
@@ -179,6 +182,25 @@ public class DropBoxFileList {
 		}
 	}
 
+    private static List<FileInfo> parseFileListJson(String flieListJson) throws JSONException {
+        JSONObject json= new JSONObject(flieListJson);
+        fileList = new ArrayList<FileInfo>();
+        if(json.has("morning_lessons")) {
+            JSONArray jlist= json.getJSONArray("morning_lessons");
+            for(int i= 0; i < jlist.length(); i++) {
+                JSONArray jdates= jlist.getJSONObject(i).getJSONArray("dates");
+                for(int j= 0; j < jdates.length(); j++) {
+                    JSONObject jdate = jdates.getJSONObject(j);
+                    String date=jdate.getString("date");
+                    JSONArray jfiles= jdate.getJSONArray("files");
+                    for(int k= 0; k < jfiles.length(); k++) {
+                        fileList.add(new FileInfo(date, jfiles.getJSONObject(k)));
+                    }
+                }
+            }
+        }
+        return fileList;
+    }
 	private static List<FileInfo> parseFileListXml(String flieListXml)
 			throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
