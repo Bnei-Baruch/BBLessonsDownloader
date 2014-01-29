@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -49,21 +50,22 @@ public class DropBoxFileList {
 		startDownloadFileList(offset);
 	}
 	
-	public synchronized static void pushFileList(String fileListJson) {
+	public synchronized static void pushFileList(String fileListJson, String dateFilter) {
 		try {	
-			caller.pushFileList(parseFileListJson(fileListJson));
+			caller.pushFileList(parseFileListJson(fileListJson, dateFilter));
 		} catch (Exception e) {
 			Log.d("DropBoxFileListDownloader", e.toString());
 		}
 	}
 
 	private static void startDownloadFileList(int offset) {
-		Calendar today = Calendar.getInstance();
+		Calendar today = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tel_Aviv"));
+		today.add(Calendar.DAY_OF_MONTH, offset);
 
 		String title = String
-				.format(Locale.getDefault(),"%04d%02d%02d", today.get(Calendar.YEAR),
+				.format(Locale.US, "%04d-%02d-%02d", today.get(Calendar.YEAR),
 						today.get(Calendar.MONTH) + 1,
-						today.get(Calendar.DAY_OF_MONTH) + offset );
+						today.get(Calendar.DAY_OF_MONTH));
 		String sUrl = String.format(uri, title, caller.data.selectedLanguage.toUpperCase(Locale.US));
 		URL url = null;
 		try {
@@ -72,12 +74,12 @@ public class DropBoxFileList {
 			if( ! storagePublicDirectory.exists())
 				storagePublicDirectory.mkdir();
 			File localFileList = new File( storagePublicDirectory.getAbsolutePath() + File.separatorChar + title + caller.data.selectedLanguage + ".txt");
-			startGetUrlTextContent(url, localFileList);
+			startGetUrlTextContent(url, localFileList, title);
 		} catch (MalformedURLException e) {
 		}
 	}
 
-	private static void startGetUrlTextContent(final URL url, final File localFileList) {
+	private static void startGetUrlTextContent(final URL url, final File localFileList, final String dateFilter) {
 		
 		class GetFileListAT extends AsyncTask<URL, Void, String> {
 			@Override
@@ -153,7 +155,7 @@ public class DropBoxFileList {
 			protected void onPostExecute(String ret)
 			{
 				if(ret != null)
-					pushFileList(ret);
+					pushFileList(ret, dateFilter);
 			}
 		}
 		
@@ -182,7 +184,7 @@ public class DropBoxFileList {
 		}
 	}
 
-    private static List<FileInfo> parseFileListJson(String flieListJson) throws JSONException {
+    private static List<FileInfo> parseFileListJson(String flieListJson, String dateFilter) throws JSONException {
         JSONObject json= new JSONObject(flieListJson);
         fileList = new ArrayList<FileInfo>();
         if(json.has("morning_lessons")) {
@@ -192,6 +194,7 @@ public class DropBoxFileList {
                 for(int j= 0; j < jdates.length(); j++) {
                     JSONObject jdate = jdates.getJSONObject(j);
                     String date=jdate.getString("date");
+                    if(!date.equals(dateFilter)) continue;
                     JSONArray jfiles= jdate.getJSONArray("files");
                     for(int k= 0; k < jfiles.length(); k++) {
                         fileList.add(new FileInfo(date, jfiles.getJSONObject(k)));
