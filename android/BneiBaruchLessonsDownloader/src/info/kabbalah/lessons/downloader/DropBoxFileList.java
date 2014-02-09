@@ -100,10 +100,6 @@ public class DropBoxFileList {
 						 */
 				
 						InputStream is = ucon.getInputStream();
-			/*			if (!url.getHost().equals(ucon.getURL().getHost())) {
-							// Redirected ! Kick the user out to the browser to sign on?
-							ShowBrowserLogOn(ucon);
-						}*/
 						if(is == null && ! localFileList.exists())
 						{
 							return null;
@@ -231,7 +227,7 @@ public class DropBoxFileList {
 
 	public static void deleteFileListsOlderThanNDays(int nRemoveFiles) {
 		final Calendar date = Calendar.getInstance();
-		final Pattern datepattern = Pattern.compile("[0-9]{8}.txt"); 
+		final Pattern datepattern = Pattern.compile(date.get(Calendar.YEAR) + "\\d{4}.txt"); 
 		date.add(Calendar.DAY_OF_YEAR, -nRemoveFiles);
 
 		final File dir = new File(FileSystemUtilities.getLocalPath());
