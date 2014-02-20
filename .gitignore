@@ -11,3 +11,11 @@
 */bin/*
 **/bin/**.exe*
 **/obj/**/*
+*.exe
+*.config
+*.dll
+*.apk
+*.suo
+*.msi
+*.xap
+*.suo

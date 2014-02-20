@@ -28,6 +28,9 @@ using System.Threading;
 using BBDailyLessonsDownloader;
 using System.Web;
 using System.Runtime.InteropServices;
+using System.Net;
+using System.Runtime.Serialization.Json;
+using System.Runtime.Serialization;
 
 namespace BBLessonsDwnldApp
 {
@@ -219,7 +222,7 @@ namespace BBLessonsDwnldApp
                     reader.Close();
             }
             Version applicationVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-//            if (applicationVersion.CompareTo(newVersion) < 0)
+            if (applicationVersion.CompareTo(newVersion) < 0)
                 {
                 if(SHMessageBoxCheck(new WindowInteropHelper(this).EnsureHandle(), 
                     "Version " + newVersion.ToString() + " of BB Lesson Downloader is now available, would you like to download it?", 
@@ -293,7 +296,8 @@ namespace BBLessonsDwnldApp
                 lblTotalProgress.Content = "";
                 lblStatus.Content = "";
 
-                string[] remoteFiles = getFilesListFromXML(false);
+                //string[] remoteFiles = getFilesListFromXML(false);
+                string[] remoteFiles = GetFilesListFromJSON(false);
                 string[] localFiles = GetLocalFilesList(false);
 
                 string[] filesToDownload = GetRemoteLocalFilesDiff(remoteFiles, localFiles);
@@ -314,7 +318,8 @@ namespace BBLessonsDwnldApp
                 foreach (string fl in filesToDownload)
                 {
                     // Note: check if the url is valid before adding it, and probably should do this is a real application
-                    downloader.Files.Add(new FileDownloader.FileInfo(FDConstants.ftpServerPath + fl));
+                    //downloader.Files.Add(new FileDownloader.FileInfo(FDConstants.ftpServerPath + fl));
+                    downloader.Files.Add(new FileDownloader.FileInfo(fl));
                 }
 
                 // Start the downloader
@@ -820,7 +825,9 @@ namespace BBLessonsDwnldApp
                 {
                     foreach (string tmpFile in remoteFiles)
                     {
-                        string found = Array.Find(localFiles, item => item.Contains(tmpFile));
+                        int n = tmpFile.LastIndexOf('/');
+                        string s = tmpFile.Substring(n + 1);
+                        string found = Array.Find(localFiles, item => item.Contains(s));
                         if (string.IsNullOrEmpty(found))
                         {
                             result.Append(tmpFile);
@@ -870,79 +877,163 @@ namespace BBLessonsDwnldApp
             }
         }
 
-        private string[] getFilesListFromXML(bool removable)
+        //private string[] getFilesListFromXML(bool removable)
+        //{
+        //    StringBuilder result = new StringBuilder();
+        //    string fileToread = FDConstants.ftpServerPath + FDConstants.txtFileToday;
+        //    XmlTextReader reader = new XmlTextReader(fileToread);
+        //    XmlNodeType type;
+        //    try
+        //    {
+        //        if (!removable)
+        //        {
+        //            while (reader.Read())
+        //            {
+        //                type = reader.NodeType;
+        //                if (type == XmlNodeType.Element)
+        //                {
+        //                    if (reader.Name == "File")
+        //                    {
+        //                        if (reader.HasAttributes)
+        //                        {
+        //                            string fName = reader.GetAttribute("Name");
+        //                            if (fName.StartsWith(clientProps.Prefix))
+        //                            {
+        //                                bool _video = (clientProps.Videomp4 && fName.EndsWith("mp4"));
+        //                                //bool _video = ((clientProps.Video && fName.EndsWith("wmv")) || (clientProps.Videomp4 && fName.EndsWith("mp4")));
+        //                                bool _audio = (clientProps.Audiomp3 && (clientProps.Size == "High" && fName.EndsWith("k.mp3") || (clientProps.Size == "Normal" && fName.EndsWith("mp3") && !fName.EndsWith("k.mp3"))));
+        //                                if ((_audio || _video))
+        //                                {
+        //                                    result.Append(fName);
+        //                                    result.Append("\n");
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            while (reader.Read())
+        //            {
+        //                type = reader.NodeType;
+        //                if (type == XmlNodeType.Element)
+        //                {
+        //                    if (reader.Name == "File")
+        //                    {
+        //                        if (reader.HasAttributes)
+        //                        {
+        //                            string fName = reader.GetAttribute("Name");
+        //                            bool _mp3 = !clientProps.Videomp4 && ((clientProps.Size == "High" && fName.EndsWith("k.mp3") || (clientProps.Size == "Normal" && fName.EndsWith("mp3") && !fName.EndsWith("k.mp3"))));
+        //                            bool _mp4 = clientProps.Videomp4 && fName.EndsWith("mp4");
+        //                            if (fName.StartsWith(clientProps.Prefix) && (_mp3 || _mp4))
+        //                            {
+        //                                result.Append(fName);
+        //                                result.Append("\n");
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        reader.Close();
+        //    }
+        //    catch
+        //    {
+        //        result = new StringBuilder();
+        //        reader.Close();
+        //    }
+        //    if (result.Length > 0)
+        //    {
+        //        result.Remove(result.ToString().LastIndexOf("\n"), 1);
+        //        return result.ToString().Split('\n');
+        //    }
+
+        //    return null;
+        //}
+
+        private string[] GetFilesListFromJSON(bool removable)
         {
             StringBuilder result = new StringBuilder();
-            string fileToread = FDConstants.ftpServerPath + FDConstants.txtFileToday;
-            XmlTextReader reader = new XmlTextReader(fileToread);
-            XmlNodeType type;
+            string fileToread = FDConstants.mylibraryLessonList;
+            string langShort = clientProps.Language.Substring(0, 3).ToUpper();
+            if (clientProps.Language == "Turkish")
+            {
+                langShort = "TRK";
+            }
             try
             {
-                if (!removable)
+                string requestUrl = fileToread + "?lang=" + langShort; // get lessons list for selected language
+                //System.Windows.Forms.MessageBox.Show(requestUrl);
+                HttpWebRequest request = WebRequest.Create(requestUrl) as HttpWebRequest;
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                if (response.StatusCode != HttpStatusCode.OK)
+                    throw new Exception(String.Format(
+                    "Server error (HTTP {0}: {1}).",
+                    response.StatusCode,
+                    response.StatusDescription));
+                // read lesson list in JSON format
+                Stream s = response.GetResponseStream();
+                StreamReader sr = new StreamReader(s);
+                string sFile = sr.ReadToEnd();
+                DataContractJsonSerializer json = new DataContractJsonSerializer(typeof(MylibJSONLessonlist));
+                MylibJSONLessonlist lessonList = (MylibJSONLessonlist)json.ReadObject(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(sFile)));
+
+                // make list of lessons for download
+                string todayDate = DateTime.Now.Year + "-";
+                if (DateTime.Now.Month < 10) todayDate += "0";
+                todayDate += DateTime.Now.Month + "-";
+                if (DateTime.Now.Day < 10) todayDate += "0";
+                todayDate += DateTime.Now.Day;
+                for (int i = 0; i < lessonList.morning_lessons.Length; i++)
                 {
-                    while (reader.Read())
+                    if (lessonList.morning_lessons[i].lang.ToLower() == langShort.ToLower())
                     {
-                        type = reader.NodeType;
-                        if (type == XmlNodeType.Element)
+                        for (int j = 0; j < lessonList.morning_lessons[i].dates.Length; j++)
                         {
-                            if (reader.Name == "File")
+                            if (lessonList.morning_lessons[i].dates[j].date == todayDate)
                             {
-                                if (reader.HasAttributes)
+                                // add lessons for today date
+                                for (int k = 0; k < lessonList.morning_lessons[i].dates[j].files.Length; k++)
                                 {
-                                    string fName = reader.GetAttribute("Name");
-                                    if (fName.StartsWith(clientProps.Prefix))
+                                    bool bAdd = false;
+                                    string fileType = lessonList.morning_lessons[i].dates[j].files[k].type.ToLower();
+                                    if (clientProps.Audiomp3 && fileType == "mp3")
                                     {
-                                        bool _video = (clientProps.Videomp4 && fName.EndsWith("mp4"));
-                                        //bool _video = ((clientProps.Video && fName.EndsWith("wmv")) || (clientProps.Videomp4 && fName.EndsWith("mp4")));
-                                        bool _audio = (clientProps.Audiomp3 && (clientProps.Size == "High" && fName.EndsWith("k.mp3") || (clientProps.Size == "Normal" && fName.EndsWith("mp3") && !fName.EndsWith("k.mp3"))));
-                                        if ((_audio || _video))
-                                        {
-                                            result.Append(fName);
-                                            result.Append("\n");
-                                        }
+                                        bAdd = true;
+                                    }
+                                    if (clientProps.Videomp4 && fileType == "mp4")
+                                    {
+                                        bAdd = true;
+                                    }
+                                    if (clientProps.Video && (fileType == "mp4" || fileType == "wmv"))
+                                    {
+                                        bAdd = true;
+                                    }
+                                    if (bAdd)
+                                    {
+                                        result.Append(lessonList.morning_lessons[i].dates[j].files[k].url + "\n");
                                     }
                                 }
                             }
                         }
+                        break;
                     }
                 }
-                else
-                {
-                    while (reader.Read())
-                    {
-                        type = reader.NodeType;
-                        if (type == XmlNodeType.Element)
-                        {
-                            if (reader.Name == "File")
-                            {
-                                if (reader.HasAttributes)
-                                {
-                                    string fName = reader.GetAttribute("Name");
-                                    bool _mp3 = !clientProps.Videomp4 && ((clientProps.Size == "High" && fName.EndsWith("k.mp3") || (clientProps.Size == "Normal" && fName.EndsWith("mp3") && !fName.EndsWith("k.mp3"))));
-                                    bool _mp4 = clientProps.Videomp4 && fName.EndsWith("mp4");
-                                    if (fName.StartsWith(clientProps.Prefix) && (_mp3 || _mp4))
-                                    {
-                                        result.Append(fName);
-                                        result.Append("\n");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                reader.Close();
             }
-            catch
+            catch (Exception e)
             {
-                result = new StringBuilder();
-                reader.Close();
+                Console.WriteLine(e.Message);
+                return null;
             }
+
+            // return result
             if (result.Length > 0)
             {
                 result.Remove(result.ToString().LastIndexOf("\n"), 1);
                 return result.ToString().Split('\n');
             }
-
             return null;
         }
 
@@ -1062,7 +1153,7 @@ namespace BBLessonsDwnldApp
                 lblStatus.Content = "";
                 downloader.LocalDirectory = clientProps.RemovableDeviceDirectory;
 
-                string[] remoteFiles = getFilesListFromXML(true);
+                string[] remoteFiles = GetFilesListFromJSON(true);
                 string[] localFiles = GetLocalFilesList(true);
                 string[] filesToDownload = GetRemoteLocalFilesDiff(remoteFiles, localFiles);
                 if (filesToDownload == null)
@@ -1083,7 +1174,8 @@ namespace BBLessonsDwnldApp
                 foreach (string fl in filesToDownload)
                 {
                     // Note: check if the url is valid before adding it, and probably should do this is a real application
-                    downloader.Files.Add(new FileDownloader.FileInfo(FDConstants.ftpServerPath + fl));
+                    //downloader.Files.Add(new FileDownloader.FileInfo(FDConstants.ftpServerPath + fl));
+                    downloader.Files.Add(new FileDownloader.FileInfo(fl));
                 }
                 // Start the downloader
                 downloader.Start();
