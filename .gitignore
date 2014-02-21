@@ -1,7 +1,7 @@
 */.DS_Store
 */*.user
 */*.exe*
-*/bin/*
+**/bin/*
 */obj/*
 *.pdb
 *.suo
