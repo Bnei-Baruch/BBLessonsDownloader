@@ -81,6 +81,7 @@ namespace BBLessonsDwnldApp
         private bool m_removableDownloadInProcess = false;
         private bool m_removableDownloadCompleted = false;
         private bool m_canStartDownloadToRemovable = false;
+        public bool m_downloadTodayLessons = true;
 
         Process _installerProcess = null;
         #endregion
@@ -276,20 +277,11 @@ namespace BBLessonsDwnldApp
             this.WindowState = WindowState.Normal;
         }
 
-        //Start Download Process
-        private void btnStart_Click(object sender, RoutedEventArgs e)
+
+        private void StartDownload()
         {
             if (NetworkStatus.IsAvailable)
             {
-                if (clientProps.RemoveOldFolders)
-                    deleteOldDirectories();
-
-                createFolders();
-                ShowLocalFilesList();
-                // Set the path to the local directory where the files will be downloaded to
-                downloader.LocalDirectory = clientProps.CurrDirectory + "\\" + clientProps.TodayFolderName; //localDir;//openFolderDialog.SelectedPath;
-                // Clear the current list of files (in case it's not the first download)
-                downloader.Files.Clear();
                 pBarFileProgress.Value = 0;
                 pBarTotalProgress.Value = 0;
                 lblFileProgress.Content = "";
@@ -298,8 +290,29 @@ namespace BBLessonsDwnldApp
 
                 //string[] remoteFiles = getFilesListFromXML(false);
                 string[] remoteFiles = GetFilesListFromJSON(false);
-                string[] localFiles = GetLocalFilesList(false);
 
+                 if (clientProps.RemoveOldFolders)
+                    deleteOldDirectories();
+                createFolders();
+                ShowLocalFilesList();
+                // Set the path to the local directory where the files will be downloaded to
+                if (this.m_downloadTodayLessons)
+                {
+                    downloader.LocalDirectory = clientProps.CurrDirectory + "\\" + clientProps.TodayFolderName;
+                }
+                else
+                {
+                    downloader.LocalDirectory = clientProps.CurrDirectory + "\\" + clientProps.YesterdayFolderName;
+                }
+                // Clear the current list of files (in case it's not the first download)
+                downloader.Files.Clear();
+
+<<<<<<< HEAD
+=======
+                //string[] remoteFiles = getFilesListFromXML(false);
+                string[] remoteFiles = GetFilesListFromJSON(false);
+>>>>>>> 75425f54194d1d0de1c9fba92989d8a937286ae6
+                string[] localFiles = GetLocalFilesList(false);
                 string[] filesToDownload = GetRemoteLocalFilesDiff(remoteFiles, localFiles);
                 if (filesToDownload == null)
                 {
@@ -332,6 +345,13 @@ namespace BBLessonsDwnldApp
             }
         }
 
+        //Start Download Process
+        private void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+            m_downloadTodayLessons = true;
+            StartDownload();
+        }
+
         //Start Download to removable device
         private void StartDownload_Removable(object sender, EventArgs e)
         {
@@ -339,7 +359,8 @@ namespace BBLessonsDwnldApp
             {
                 if (m_canStartDownloadToRemovable && clientProps.CopyToRemovable && downloader.CanStart)
                 {
-                    string directoryString = @"" + (m_removableDir + FDConstants.dirFolderName + "\\" + clientProps.TodayFolderName);
+                    string sDate = m_downloadTodayLessons ? clientProps.TodayFolderName : clientProps.YesterdayFolderName;
+                    string directoryString = @"" + (m_removableDir + FDConstants.dirFolderName + "\\" + sDate);
                     try
                     {
                         DirectoryInfo di = new DirectoryInfo(@"" + m_removableDir);
@@ -389,7 +410,7 @@ namespace BBLessonsDwnldApp
         {
             string yesterdayFolder = clientProps.CurrDirectory + "\\" + clientProps.YesterdayFolderName;
             createFolders();
-            Process.Start(yesterdayFolder);
+            Process.Start(@yesterdayFolder);
         }
 
         private void btnContactUs_Click(object sender, RoutedEventArgs e)
@@ -598,6 +619,7 @@ namespace BBLessonsDwnldApp
         {
             // Setting the buttons
             btnStart.IsEnabled = downloader.CanStart && !downloader.HasBeenCanceled;
+            btnStart_Yesterday.IsEnabled = downloader.CanStart && !downloader.HasBeenCanceled;
             btnStop.IsEnabled = downloader.CanStop;
             btnPause.IsEnabled = downloader.CanPause;
             btnResume.IsEnabled = downloader.CanResume;
@@ -652,7 +674,10 @@ namespace BBLessonsDwnldApp
         private void downloader_FileDownloadSucceeded(object sender, EventArgs e)
         {
             if (!m_removableDownloadInProcess)
-                lstFiles.Items.Add(clientProps.TodayFolderName + "\\" + downloader.recentFileDownloaded);
+            {
+                string sDate = m_downloadTodayLessons ? clientProps.TodayFolderName : clientProps.YesterdayFolderName;
+                lstFiles.Items.Add(sDate + "\\" + downloader.recentFileDownloaded);
+            }
         }
 
         // Display of the file info after the download started
@@ -724,7 +749,7 @@ namespace BBLessonsDwnldApp
         private void InitializeDefaults()
         {
             linkLocalDir.Content = clientProps.CurrDirectory;
-            string localDir = clientProps.CurrDirectory + "\\" + clientProps.TodayFolderName; ;
+            string localDir = clientProps.CurrDirectory + "\\" + clientProps.TodayFolderName;
             ComboBoxItem cboxitem;
             foreach (string val in FDConstants.languagesList)
             {
@@ -758,7 +783,7 @@ namespace BBLessonsDwnldApp
             clientProps.Size = Settings.Default.size;
             clientProps.Audiomp3 = Settings.Default.audiomp3;
             //clientProps.Videomp4 = Settings.Default.videomp4;
-            clientProps.Video = Settings.Default.video;
+            clientProps.Video = false;//Settings.Default.video;
             clientProps.CopyToRemovable = Settings.Default.copyToRemovable;
             clientProps.RemoveOldFolders = Settings.Default.removeOldFolders;
         }
@@ -799,13 +824,14 @@ namespace BBLessonsDwnldApp
 
             try
             {
-                DirectoryInfo di = new DirectoryInfo(clientProps.CurrDirectory + "\\" + clientProps.TodayFolderName);
+                string sDate = m_downloadTodayLessons ? clientProps.TodayFolderName : clientProps.YesterdayFolderName;
+                DirectoryInfo di = new DirectoryInfo(clientProps.CurrDirectory + "\\" + sDate);
                 FileInfo[] rgFiles = di.GetFiles();
                 if (rgFiles.Length > 0)
                 {
                     foreach (FileInfo fi in rgFiles)
                     {
-                        lstFiles.Items.Add(clientProps.TodayFolderName + "\\" + fi.Name);
+                        lstFiles.Items.Add(sDate + "\\" + fi.Name);
                     }
                 }
             }
@@ -850,7 +876,8 @@ namespace BBLessonsDwnldApp
             StringBuilder result = new StringBuilder();
             try
             {
-                DirectoryInfo di = new DirectoryInfo(!removable ? (clientProps.CurrDirectory + "\\" + clientProps.TodayFolderName) : (clientProps.RemovableDeviceDirectory));
+                string sDate = (this.m_downloadTodayLessons) ? clientProps.TodayFolderName : clientProps.YesterdayFolderName;
+                DirectoryInfo di = new DirectoryInfo(!removable ? (clientProps.CurrDirectory + "\\" + sDate) : (clientProps.RemovableDeviceDirectory));
                 FileInfo[] rgFiles = di.GetFiles();
                 if (rgFiles.Length == 0)
                     return null;
@@ -958,6 +985,11 @@ namespace BBLessonsDwnldApp
             StringBuilder result = new StringBuilder();
             string fileToread = FDConstants.mylibraryLessonList;
             string langShort = clientProps.Language.Substring(0, 3).ToUpper();
+<<<<<<< HEAD
+            string dateToday = "";
+            string dateYesterday = "";
+=======
+>>>>>>> 75425f54194d1d0de1c9fba92989d8a937286ae6
             if (clientProps.Language == "Turkish")
             {
                 langShort = "TRK";
@@ -981,17 +1013,92 @@ namespace BBLessonsDwnldApp
                 MylibJSONLessonlist lessonList = (MylibJSONLessonlist)json.ReadObject(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(sFile)));
 
                 // make list of lessons for download
+<<<<<<< HEAD
+                // dates are determined from lesson list, not from system time
+                // older date from lesson list is yesterday, newer date is today
+=======
                 string todayDate = DateTime.Now.Year + "-";
                 if (DateTime.Now.Month < 10) todayDate += "0";
                 todayDate += DateTime.Now.Month + "-";
                 if (DateTime.Now.Day < 10) todayDate += "0";
                 todayDate += DateTime.Now.Day;
+>>>>>>> 75425f54194d1d0de1c9fba92989d8a937286ae6
                 for (int i = 0; i < lessonList.morning_lessons.Length; i++)
                 {
                     if (lessonList.morning_lessons[i].lang.ToLower() == langShort.ToLower())
                     {
                         for (int j = 0; j < lessonList.morning_lessons[i].dates.Length; j++)
                         {
+<<<<<<< HEAD
+                            if (dateToday == "")
+                            {
+                                dateToday = lessonList.morning_lessons[i].dates[j].date;
+                            }
+                            else
+                            {
+                                if (lessonList.morning_lessons[i].dates[j].date != dateToday)
+                                {
+                                    dateYesterday = lessonList.morning_lessons[i].dates[j].date;
+                                    string[] date1 = dateYesterday.Split('-');
+                                    string[] date2 = dateToday.Split('-');
+                                    DateTime dtY = new DateTime(Convert.ToInt32(date1[0]), Convert.ToInt32(date1[1]), Convert.ToInt32(date1[2]));
+                                    DateTime dtT = new DateTime(Convert.ToInt32(date2[0]), Convert.ToInt32(date2[1]), Convert.ToInt32(date2[2]));
+                                    if (dtY > dtT)
+                                    {
+                                        string tmp = dateYesterday;
+                                        dateYesterday = dateToday;
+                                        dateToday = tmp;
+                                    }
+                                    break;
+                                }
+                            }
+
+                        }
+                        break;
+                    }
+                }
+                string sDate;
+                if (m_downloadTodayLessons)
+                {
+                    sDate = dateToday;
+                } else
+                {
+                    sDate = dateYesterday;
+                }
+                clientProps.TodayFolderName = dateToday;
+                clientProps.YesterdayFolderName = dateYesterday;
+
+                //string todayDate = DateTime.Now.Year + "-";
+                //if (DateTime.Now.Month < 10) todayDate += "0";
+                //todayDate += DateTime.Now.Month + "-";
+                //if (DateTime.Now.Day < 10) todayDate += "0";
+                //todayDate += DateTime.Now.Day;
+                for (int i = 0; i < lessonList.morning_lessons.Length; i++)
+                {
+                    if (lessonList.morning_lessons[i].lang.ToLower() == langShort.ToLower())
+                    {
+                        for (int j = 0; j < lessonList.morning_lessons[i].dates.Length; j++)
+                        {
+                            if (lessonList.morning_lessons[i].dates[j].date == sDate)
+                            {
+                                // add lessons for selected date (today or yesterday)
+                                for (int k = 0; k < lessonList.morning_lessons[i].dates[j].files.Length; k++)
+                                {
+                                    bool bAdd = false;
+                                    string fileType = lessonList.morning_lessons[i].dates[j].files[k].type.ToLower();
+                                    if (clientProps.Audiomp3 && fileType == "mp3")
+                                    {
+                                        bAdd = true;
+                                    }
+                                    if (clientProps.Videomp4 && fileType == "mp4")
+                                    {
+                                        bAdd = true;
+                                    }
+                                    if (clientProps.Video && (fileType == "mp4" || fileType == "wmv"))
+                                    {
+                                        bAdd = true;
+                                    }
+=======
                             if (lessonList.morning_lessons[i].dates[j].date == todayDate)
                             {
                                 // add lessons for today date
@@ -1011,6 +1118,7 @@ namespace BBLessonsDwnldApp
                                     {
                                         bAdd = true;
                                     }
+>>>>>>> 75425f54194d1d0de1c9fba92989d8a937286ae6
                                     if (bAdd)
                                     {
                                         result.Append(lessonList.morning_lessons[i].dates[j].files[k].url + "\n");
@@ -1039,7 +1147,7 @@ namespace BBLessonsDwnldApp
 
         private void createFolders()
         {
-            setFoldersName();
+            if (clientProps.TodayFolderName == "") setFoldersName();
             string directoryString = clientProps.CurrDirectory + "\\" + clientProps.TodayFolderName;
             if (!Directory.Exists(directoryString))
                 System.IO.Directory.CreateDirectory(directoryString);
@@ -1184,6 +1292,11 @@ namespace BBLessonsDwnldApp
             {
                 lblStatusTreadsHandler(lblStatus, FDConstants.connProblemsMsg);
             }
+        }
+        private void btnStart_Yesterday_Click(object sender, RoutedEventArgs e)
+        {
+            m_downloadTodayLessons = false;
+            StartDownload();
         }
         #endregion
 
