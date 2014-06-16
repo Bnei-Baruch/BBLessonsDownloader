@@ -8,7 +8,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,19 +20,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -204,30 +194,6 @@ public class DropBoxFileList {
         }
         return fileList;
     }
-	private static List<FileInfo> parseFileListXml(String flieListXml)
-			throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-		DocumentBuilder db = dbf.newDocumentBuilder();
-
-		Document doc = db.parse(
-				new InputSource(new StringReader(
-						flieListXml
-				)));
-
-		NodeList files = doc.getElementsByTagName("File");
-		if(files.getLength() == 0)
-		{
-			Log.d("DropBoxFileListDownloader", "No files found.");
-			return null;
-		}
-		fileList = new ArrayList<FileInfo>();
-		for (int i = 0; i < files.getLength(); ++i) {
-			Node file = files.item(i);
-			fileList.add(new FileInfo(file));
-		}
-		return fileList;
-	}
 
 	public static void deleteFileListsOlderThanNDays(int nRemoveFiles) {
 		final Calendar date = Calendar.getInstance();

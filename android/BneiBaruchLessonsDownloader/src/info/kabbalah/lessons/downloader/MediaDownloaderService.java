@@ -357,7 +357,7 @@ public class MediaDownloaderService	extends android.app.Service {
 			long purgeTime = cal.getTimeInMillis(); 
 			if(removeFiles(directory, purgeTime))
 			{
-				sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, 
+				sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
 						Uri.parse("file://" 
 								+ Environment.getExternalStorageDirectory())));
 			}
