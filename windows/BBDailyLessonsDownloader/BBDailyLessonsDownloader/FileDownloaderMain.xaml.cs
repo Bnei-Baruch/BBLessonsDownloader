@@ -307,11 +307,8 @@ namespace BBLessonsDwnldApp
                 // Clear the current list of files (in case it's not the first download)
                 downloader.Files.Clear();
 
-<<<<<<< HEAD
-=======
                 //string[] remoteFiles = getFilesListFromXML(false);
-                string[] remoteFiles = GetFilesListFromJSON(false);
->>>>>>> 75425f54194d1d0de1c9fba92989d8a937286ae6
+               remoteFiles = GetFilesListFromJSON(false);
                 string[] localFiles = GetLocalFilesList(false);
                 string[] filesToDownload = GetRemoteLocalFilesDiff(remoteFiles, localFiles);
                 if (filesToDownload == null)
@@ -985,11 +982,8 @@ namespace BBLessonsDwnldApp
             StringBuilder result = new StringBuilder();
             string fileToread = FDConstants.mylibraryLessonList;
             string langShort = clientProps.Language.Substring(0, 3).ToUpper();
-<<<<<<< HEAD
             string dateToday = "";
             string dateYesterday = "";
-=======
->>>>>>> 75425f54194d1d0de1c9fba92989d8a937286ae6
             if (clientProps.Language == "Turkish")
             {
                 langShort = "TRK";
@@ -1013,23 +1007,19 @@ namespace BBLessonsDwnldApp
                 MylibJSONLessonlist lessonList = (MylibJSONLessonlist)json.ReadObject(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(sFile)));
 
                 // make list of lessons for download
-<<<<<<< HEAD
                 // dates are determined from lesson list, not from system time
                 // older date from lesson list is yesterday, newer date is today
-=======
                 string todayDate = DateTime.Now.Year + "-";
                 if (DateTime.Now.Month < 10) todayDate += "0";
                 todayDate += DateTime.Now.Month + "-";
                 if (DateTime.Now.Day < 10) todayDate += "0";
                 todayDate += DateTime.Now.Day;
->>>>>>> 75425f54194d1d0de1c9fba92989d8a937286ae6
                 for (int i = 0; i < lessonList.morning_lessons.Length; i++)
                 {
                     if (lessonList.morning_lessons[i].lang.ToLower() == langShort.ToLower())
                     {
                         for (int j = 0; j < lessonList.morning_lessons[i].dates.Length; j++)
                         {
-<<<<<<< HEAD
                             if (dateToday == "")
                             {
                                 dateToday = lessonList.morning_lessons[i].dates[j].date;
@@ -1098,7 +1088,8 @@ namespace BBLessonsDwnldApp
                                     {
                                         bAdd = true;
                                     }
-=======
+                                }
+                            }
                             if (lessonList.morning_lessons[i].dates[j].date == todayDate)
                             {
                                 // add lessons for today date
@@ -1118,7 +1109,6 @@ namespace BBLessonsDwnldApp
                                     {
                                         bAdd = true;
                                     }
->>>>>>> 75425f54194d1d0de1c9fba92989d8a937286ae6
                                     if (bAdd)
                                     {
                                         result.Append(lessonList.morning_lessons[i].dates[j].files[k].url + "\n");
