@@ -1,7 +1,7 @@
 */.DS_Store
 */*.user
 */*.exe*
-*/bin/*
+**/bin/*
 */obj/*
 *.pdb
 *.suo
@@ -11,3 +11,11 @@
 */bin/*
 **/bin/**.exe*
 **/obj/**/*
+*.exe
+*.config
+*.dll
+*.apk
+*.suo
+*.msi
+*.xap
+*.suo

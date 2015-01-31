@@ -27,12 +27,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B5F21D111BE940CA8364653A68246DF0"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_EF29F2B2AA8146618E3B3DD412D7B86A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -46,13 +40,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2BD5295053074EAD9DEEE047D41BE2BD"
+        "OwnerKey" = "8:_EF29F2B2AA8146618E3B3DD412D7B86A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_EF29F2B2AA8146618E3B3DD412D7B86A"
+        "OwnerKey" = "8:_2BD5295053074EAD9DEEE047D41BE2BD"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -137,7 +131,49 @@
     {
         "CustomAction"
         {
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_F4782C072F8B4AF5988BF01F657546E6"
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_0DB33239C9DE499BA1F911DC464D03A3"
+            {
+            "Name" = "8:Primary output from silentInstaller (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_2BD5295053074EAD9DEEE047D41BE2BD"
+            "FileType" = "3:2"
+            "InstallAction" = "3:2"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_1A37E8C5_7FA3_4043_900C_8FD89837F166"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_8AB924B55CED4BF692E6C0C8CAB49C24"
+            {
+            "Name" = "8:Primary output from silentInstaller (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_2BD5295053074EAD9DEEE047D41BE2BD"
+            "FileType" = "3:2"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:2"
+            "Identifier" = "8:_CB6E2506_232C_4788_842A_F371BB334584"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_D06A4A225E904E99B7203FB8C768BAC6"
+            {
+            "Name" = "8:Primary output from BBDailyLessonsDownloader (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_9987A3F7BC944EDEBB09485C879D9BEF"
+            "FileType" = "3:2"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_95AA2009_B4D4_438E_98EB_9E0AF2680DCB"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_FE69A9A03DC64284AAE6D6F283818BB9"
             {
             "Name" = "8:Primary output from BBDailyLessonsDownloader (Active)"
             "Condition" = "8:"
@@ -146,8 +182,8 @@
             "InstallAction" = "3:2"
             "Arguments" = "8:"
             "EntryPoint" = "8:"
-            "Sequence" = "3:1"
-            "Identifier" = "8:_95AA2009_B4D4_438E_98EB_9E0AF2680DCB"
+            "Sequence" = "3:2"
+            "Identifier" = "8:_20E88A56_773A_4838_AB2E_F9E7F66A7358"
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:"
             }
@@ -174,26 +210,6 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B5F21D111BE940CA8364653A68246DF0"
-            {
-            "SourcePath" = "8:\\\\psf\\Home\\Projects\\BB\\LessonsDownloader\\BBLessonsDownloader\\windows\\BBDailyLessonsDownloader\\BBDailyLessonsDownloader\\images\\favicon.ico"
-            "TargetName" = "8:favicon.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_34D8C3B87675477A86F31F5272E91F3F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
         }
         "FileType"
         {
@@ -262,7 +278,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:BB Daily Lessons Downloader"
         "ProductCode" = "8:{F286DD32-CA5F-41F9-A87B-01C9476F624B}"
-        "PackageCode" = "8:{372B2DBB-206E-49F5-8AFB-3E639E252C6B}"
+        "PackageCode" = "8:{1C8B558B-4797-4B7A-8DFE-4A2738CCD128}"
         "UpgradeCode" = "8:{B228FC48-500B-4C56-B37A-97728447FF8A}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -388,12 +404,12 @@
             "Arguments" = "8:/u=[ProductCode]"
             "Description" = "8:"
             "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
+            "IconIndex" = "3:32512"
             "Transitive" = "11:FALSE"
             "Target" = "8:_EF29F2B2AA8146618E3B3DD412D7B86A"
             "Folder" = "8:_6F6E8957DBA942E5AEC577FF6ED2A1B5"
             "WorkingFolder" = "8:_34D8C3B87675477A86F31F5272E91F3F"
-            "Icon" = "8:_B5F21D111BE940CA8364653A68246DF0"
+            "Icon" = "8:_9987A3F7BC944EDEBB09485C879D9BEF"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_7D4CBD10CF2D4FC0BB3D87BBC1344944"
@@ -402,12 +418,12 @@
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
+            "IconIndex" = "3:32512"
             "Transitive" = "11:FALSE"
             "Target" = "8:_9987A3F7BC944EDEBB09485C879D9BEF"
             "Folder" = "8:_6F6E8957DBA942E5AEC577FF6ED2A1B5"
             "WorkingFolder" = "8:_34D8C3B87675477A86F31F5272E91F3F"
-            "Icon" = "8:_B5F21D111BE940CA8364653A68246DF0"
+            "Icon" = "8:_9987A3F7BC944EDEBB09485C879D9BEF"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECC280E0921E4293952BCEEEC88469FE"
@@ -825,7 +841,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2BD5295053074EAD9DEEE047D41BE2BD"
             {
-            "SourcePath" = "8:\\\\psf\\Home\\Projects\\BB\\LessonsDownloader\\BBLessonsDownloader\\windows\\BBDailyLessonsDownloader\\silentInstaller\\obj\\x86\\Debug\\silentInstaller.exe"
+            "SourcePath" = "8:..\\silentInstaller\\obj\\x86\\Release\\silentInstaller.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_34D8C3B87675477A86F31F5272E91F3F"
@@ -853,7 +869,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9987A3F7BC944EDEBB09485C879D9BEF"
             {
-            "SourcePath" = "8:\\\\psf\\Home\\Projects\\BB\\LessonsDownloader\\BBLessonsDownloader\\windows\\BBDailyLessonsDownloader\\BBDailyLessonsDownloader\\obj\\x86\\Debug\\BBDailyLessonsDownloader.exe"
+            "SourcePath" = "8:..\\BBDailyLessonsDownloader\\obj\\x86\\Release\\BBDailyLessonsDownloader.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_34D8C3B87675477A86F31F5272E91F3F"
@@ -881,7 +897,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EF29F2B2AA8146618E3B3DD412D7B86A"
             {
-            "SourcePath" = "8:\\\\psf\\Home\\Projects\\BB\\LessonsDownloader\\BBLessonsDownloader\\windows\\BBDailyLessonsDownloader\\UninstallApp\\obj\\x86\\Debug\\UninstallApp.exe"
+            "SourcePath" = "8:..\\UninstallApp\\obj\\x86\\Release\\UninstallApp.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_34D8C3B87675477A86F31F5272E91F3F"
