@@ -193,7 +193,7 @@ public class DropBoxFileList {
 
 	public static void deleteFileListsOlderThanNDays(int nRemoveFiles) {
 		final Calendar date = Calendar.getInstance();
-		final Pattern datepattern = Pattern.compile(date.get(Calendar.YEAR) + "\\d{4}.txt"); 
+		final Pattern datepattern = Pattern.compile("\\d{4}\\-\\d{2}\\-\\d{2}.{3}.txt"); 
 		date.add(Calendar.DAY_OF_YEAR, -nRemoveFiles);
 
 		final File dir = new File(FileSystemUtilities.getLocalPath());
