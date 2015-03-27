@@ -5,7 +5,7 @@ import java.io.File;
 
 import android.os.Environment;
 
-public class FileSystemUtilities {
+class FileSystemUtilities {
 
 	public static String folderName = "MorningLessons";
 	public static boolean resumeDownloads = false;
@@ -14,9 +14,11 @@ public class FileSystemUtilities {
 		return folderName;
 	}
 
-	public FileSystemUtilities() {
-		super();
-	}
+// --Commented out by Inspection START (26/03/2015 14:01):
+//	FileSystemUtilities() {
+//		super();
+//	}
+// --Commented out by Inspection STOP (26/03/2015 14:01)
 
 	public static String getDefaultLocalPath() {
 		String localFSPath = null;

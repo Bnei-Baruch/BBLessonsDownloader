@@ -12,10 +12,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
-public class MusicUtils {
+class MusicUtils {
     private final static long [] sEmptyList = new long[0];
 
-    public static long [] getSongListForCursor(Cursor cursor) {
+    private static long [] getSongListForCursor(Cursor cursor) {
         if (cursor == null) {
             return sEmptyList;
         }
@@ -35,22 +35,24 @@ public class MusicUtils {
         return list;
     }
 
-    public static long [] getSongListForArtist(Context context, long id) {
-        final String[] ccols = new String[] { MediaStore.Audio.Media._ID };
-        String where = MediaStore.Audio.Media.ARTIST_ID + "=" + id + " AND " + 
-        MediaStore.Audio.Media.IS_MUSIC + "=1";
-        Cursor cursor = query(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                ccols, where, null,
-                MediaStore.Audio.Media.ALBUM_KEY + ","  + MediaStore.Audio.Media.TRACK);
-        
-        if (cursor != null) {
-            long [] list = getSongListForCursor(cursor);
-            cursor.close();
-            return list;
-        }
-        return sEmptyList;
-    }
-	
+// --Commented out by Inspection START (26/03/2015 14:01):
+//    public static long [] getSongListForArtist(Context context, long id) {
+//        final String[] ccols = new String[] { MediaStore.Audio.Media._ID };
+//        String where = MediaStore.Audio.Media.ARTIST_ID + "=" + id + " AND " +
+//        MediaStore.Audio.Media.IS_MUSIC + "=1";
+//        Cursor cursor = query(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+//                ccols, where, null,
+//                MediaStore.Audio.Media.ALBUM_KEY + ","  + MediaStore.Audio.Media.TRACK);
+//
+//        if (cursor != null) {
+//            long [] list = getSongListForCursor(cursor);
+//            cursor.close();
+//            return list;
+//        }
+//        return sEmptyList;
+//    }
+// --Commented out by Inspection STOP (26/03/2015 14:01)
+
     public static long [] getSongIdLikeName(Context context, String name) {
         final String[] ccols = new String[] { MediaStore.Audio.Media._ID };
         String where = MediaStore.Audio.Media.DISPLAY_NAME + " LIKE ? AND " + 
@@ -123,7 +125,6 @@ public class MusicUtils {
 	public static void clearPlaylist(Context context, int plid) {
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", plid);
         context.getContentResolver().delete(uri, null, null);
-        return;
 	}
 	
 	public static void cleanOldPlaylists(Context ctx, String folderName, int delta)
@@ -171,8 +172,8 @@ public class MusicUtils {
 		}
 	}
 
-    public static Cursor query(Context context, Uri uri, String[] projection,
-            String selection, String[] selectionArgs, String sortOrder, int limit) {
+    private static Cursor query(Context context, Uri uri, String[] projection,
+                                String selection, String[] selectionArgs, String sortOrder, int limit) {
         try {
             ContentResolver resolver = context.getContentResolver();
             if (resolver == null) {
@@ -193,18 +194,20 @@ public class MusicUtils {
         return query(context, uri, projection, selection, selectionArgs, sortOrder, 0);
     }
 
-    public static boolean isMediaScannerScanning(Context context) {
-        boolean result = false;
-        Cursor cursor = query(context, MediaStore.getMediaScannerUri(), 
-                new String [] { MediaStore.MEDIA_SCANNER_VOLUME }, null, null, null);
-        if (cursor != null) {
-            if (cursor.getCount() == 1) {
-                cursor.moveToFirst();
-                result = "external".equals(cursor.getString(0));
-            }
-            cursor.close(); 
-        } 
-
-        return result;
-    }
+// --Commented out by Inspection START (26/03/2015 14:01):
+//    public static boolean isMediaScannerScanning(Context context) {
+//        boolean result = false;
+//        Cursor cursor = query(context, MediaStore.getMediaScannerUri(),
+//                new String [] { MediaStore.MEDIA_SCANNER_VOLUME }, null, null, null);
+//        if (cursor != null) {
+//            if (cursor.getCount() == 1) {
+//                cursor.moveToFirst();
+//                result = "external".equals(cursor.getString(0));
+//            }
+//            cursor.close();
+//        }
+//
+//        return result;
+//    }
+// --Commented out by Inspection STOP (26/03/2015 14:01)
 }

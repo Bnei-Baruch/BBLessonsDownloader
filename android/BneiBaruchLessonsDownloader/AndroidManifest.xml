@@ -21,8 +21,8 @@
 		</activity>
 		<activity android:label="@string/app_name" android:name=".DownloaderPreferences" android:exported="false">
 			<intent-filter>
-				<action android:name="android.intent.action.VIEW"></action>
-				<category android:name="android.intent.category.PREFERENCE"></category>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.PREFERENCE" />
 			</intent-filter>
 		</activity>
 		<service android:name=".MediaDownloaderService" android:label="@string/app_name" android:exported="false">

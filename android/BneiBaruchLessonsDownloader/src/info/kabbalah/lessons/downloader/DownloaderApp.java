@@ -6,7 +6,7 @@ package info.kabbalah.lessons.downloader;
 import android.app.Application;
 
 //@ReportsCrashes(formKey = "dFNTemhCbldlX2lLZjZBV09yRHFMTFE6MQ")
-public class DownloaderApp extends Application {
+class DownloaderApp extends Application {
 	@Override
     public void onCreate() {
         // The following line triggers the initialization of ACRA
