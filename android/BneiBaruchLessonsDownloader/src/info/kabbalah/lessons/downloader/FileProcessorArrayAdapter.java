@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class FileProcessorArrayAdapter extends ArrayAdapter<FileProcessor> {
+class FileProcessorArrayAdapter extends ArrayAdapter<FileProcessor> {
 
-	private ArrayList<FileProcessor> items;
+	private final ArrayList<FileProcessor> items;
 	
 	public FileProcessorArrayAdapter(Context context, int textViewResourceId, ArrayList<FileProcessor> arrayList) {
 		super(context, textViewResourceId, arrayList);
@@ -39,10 +39,12 @@ public class FileProcessorArrayAdapter extends ArrayAdapter<FileProcessor> {
 		return true;
 	}
 
-	public ArrayList<FileProcessor> getList() {
-		return items;
-	}
-	
+// --Commented out by Inspection START (26/03/2015 14:01):
+//	public ArrayList<FileProcessor> getList() {
+//		return items;
+//	}
+// --Commented out by Inspection STOP (26/03/2015 14:01)
+
 	public boolean hasStableIds()
 	{
 		return false;

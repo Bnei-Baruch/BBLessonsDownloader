@@ -19,3 +19,5 @@
 *.msi
 *.xap
 *.suo
+*/.gradle
+*/.idea

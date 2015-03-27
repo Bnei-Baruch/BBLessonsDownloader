@@ -34,20 +34,16 @@ import android.widget.Toast;
 public class MediaDownloaderService	extends android.app.Service {
     private NotificationManager mNM;
     
-	public DownloaderPreferenceData data = new DownloaderPreferenceData();
+	public final DownloaderPreferenceData data = new DownloaderPreferenceData();
     
-    WifiLock wifilock;
-	DownloadFilesTask task = null;
+    private WifiLock wifilock;
+	private DownloadFilesTask task = null;
 
     // This is the object that receives interactions from clients.  See
     // RemoteService for a more complete example.
     private final IBinder mBinder = new LocalBinder();
 
-	private RemoteViews notificationView;
-
-	private Notification downloadNotification;
-
-	private long time;
+    private long time;
 
 	private Downloader downloader = null;
 
@@ -57,12 +53,9 @@ public class MediaDownloaderService	extends android.app.Service {
 
 	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF = "info.kabbalah.lessons.downloader.Network.WiFi.Off";
 
-	private ArrayList<FileProcessor> filesToDownload = new ArrayList<FileProcessor>();
-	private ArrayList<FileProcessor> processedFiles = new ArrayList<FileProcessor>();
+	private final ArrayList<FileProcessor> filesToDownload = new ArrayList<FileProcessor>();
+	private final ArrayList<FileProcessor> processedFiles = new ArrayList<FileProcessor>();
 
-    // Unique Identification Number for the Notification.
-    // We use it on Notification start, and to cancel it.
-    private int NOTIFICATION = R.string.local_service_started;
     private int PLAY_NOTIFICATION_ID = R.string.local_service_started + 123;
 
 	private WakeLock powerlock;
@@ -134,6 +127,7 @@ public class MediaDownloaderService	extends android.app.Service {
 	@Override
     public void onDestroy() {
         // Cancel the persistent notification.
+        int NOTIFICATION = string.local_service_started;
         mNM.cancel(NOTIFICATION);
         // Tell the user we stopped.
         //Toast.makeText(this, R.string.local_service_stopped, Toast.LENGTH_SHORT).show();
@@ -170,7 +164,7 @@ public class MediaDownloaderService	extends android.app.Service {
         mNM.notify(PLAY_NOTIFICATION_ID++, notification);
     }
 
-	public void startDownload() {
+	void startDownload() {
         if(task == null)
         {
             sendDownloadNotification(100, 0, true, "");
@@ -186,12 +180,12 @@ public class MediaDownloaderService	extends android.app.Service {
 
 	private void sendDownloadNotification(int max, int cur, boolean indeterminate, String fileName) {
 		CharSequence text = getText(R.string.local_service_started);
-        downloadNotification = new Notification(R.drawable.icon, text,
+        Notification downloadNotification = new Notification(R.drawable.icon, text,
                 System.currentTimeMillis());
 
         downloadNotification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
-        
-		notificationView = new RemoteViews(getPackageName(), R.layout.download_notification);
+
+        RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.download_notification);
 		notificationView.setImageViewResource(R.id.image, R.drawable.icon);
 		notificationView.setTextViewText(R.id.notificationProgressText, "Downloading " + fileName);
 		notificationView.setProgressBar(R.id.notificationProgressBar, max, cur, indeterminate);
@@ -245,7 +239,7 @@ public class MediaDownloaderService	extends android.app.Service {
 		this.downloader = downloader;
 	}
 
-	public Downloader getDownloader() {
+	Downloader getDownloader() {
 		return downloader;
 	}
 	
@@ -362,7 +356,7 @@ public class MediaDownloaderService	extends android.app.Service {
 								+ Environment.getExternalStorageDirectory())));
 			}
 		} else {
-			Log.w("deleteFilesOlderThanNdays", "Files were not deleted, directory " + dirWay + " does'nt exist!");
+			Log.w("deleteFilesOlderThan..", "Files were not deleted, directory " + dirWay + " does'nt exist!");
 			directory.mkdirs();
 		}
 	}
@@ -379,7 +373,7 @@ public class MediaDownloaderService	extends android.app.Service {
 			}
 			if(listFile.lastModified() < purgeTime) {
 				if(!listFile.delete()) {
-					Log.e("deleteFilesOlderThanNdays", "Unable to delete file: " + listFile);
+					Log.e("deleteFilesOlderThan...", "Unable to delete file: " + listFile);
 				} else {
 					filesRemoved = true;
 				}
