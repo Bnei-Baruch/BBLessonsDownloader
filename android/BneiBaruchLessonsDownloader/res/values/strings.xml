@@ -2,18 +2,18 @@
 <resources>
 	<string name="app_name">Bnei Baruch Lessons Downloader</string>
 	<string name="NoFileFound">Files not found</string>
-	<!-- string name="CannotPlayFile">The file couldn\'t be played</string -->
+	<string name="CannotPlayFile">The file couldn\'t be played</string>
 	<string name="DownloadingFile">Download started</string>
 	<string name="local_service_started">Bnei Baruch Media Downloader Started</string>
-	<!-- string name="local_service_stopped">Bnei Baruch Media Downloader Stopped</string -->
-	<!-- string name="local_service_label">Bnei Baruch Media Downloading</string -->
-	<!-- string name="local_service_connected">Bnei Baruch Media Downloader Connected</string -->
-	<!-- string name="local_service_disconnected">Bnei Baruch Media Downloader Disconnected</string -->
+	<string name="local_service_stopped">Bnei Baruch Media Downloader Stopped</string>
+	<string name="local_service_label">Bnei Baruch Media Downloading</string>
+	<string name="local_service_connected">Bnei Baruch Media Downloader Connected</string>
+	<string name="local_service_disconnected">Bnei Baruch Media Downloader Disconnected</string>
 	<string name="file_downloaded">Downloaded: </string>
 	<string name="file_failed">Cannot download file:</string>
 	<string name="language">Language</string>
 	<string name="download_mp3">Download mp3</string>
-	<!-- string name="high_quality">High Quality</string -->
+	<string name="high_quality">High Quality</string>
 	<string name="download_mp4">Download mp4</string>
 	<string name="local_folder_name">Local Folder Name</string>
 	<string name="show_yesterday">Show Yesterday</string>

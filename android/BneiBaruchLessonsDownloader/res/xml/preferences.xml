@@ -29,7 +29,7 @@
 	<ListPreference android:dialogTitle="Select Option"
 		android:title="Automatic Check" android:key="dl_check_schedule"
 		android:entries="@array/check_shedule_names" android:entryValues="@array/check_shedule_values"
-		android:defaultValue="0" />
+		android:defaultValue="0"></ListPreference>
 	<CheckBoxPreference android:summaryOff="@string/check_wifi_only"
 		android:title="@string/check_cellular" android:summaryOn="@string/check_both"
 		android:key="check_with_cellular" android:defaultValue="false"/>

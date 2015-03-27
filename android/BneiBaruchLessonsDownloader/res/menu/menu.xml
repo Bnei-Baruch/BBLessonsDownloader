@@ -3,16 +3,20 @@
 	<item android:title="@string/check_now"
 		android:titleCondensed="@string/check"
 		android:id="@+id/checkNow" 
+		android:icon="@+drawable/ic_menu_refresh"
 		/>
 	<item android:title="@string/show_today"
 		android:titleCondensed="@string/show_today_condensed"
 		android:id="@+id/zeroDay"
+		android:icon="@+drawable/ic_menu_today"
 		/>
 	<item android:title="@string/show_yesterday"
 		android:titleCondensed="@string/show_yesterday_condensed" 
 		android:id="@+id/oneDay"
+		android:icon="@+drawable/ic_menu_recent_history"
 		/>
 	<item android:title="@string/settings_title" 
 			android:id="@+id/preferences"
+			 android:icon="@+drawable/ic_menu_preferences"
 			 />
 </menu>

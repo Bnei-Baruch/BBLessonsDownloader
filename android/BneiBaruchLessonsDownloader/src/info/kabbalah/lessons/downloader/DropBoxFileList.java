@@ -28,10 +28,10 @@ import org.json.JSONObject;
 import android.os.AsyncTask;
 import android.util.Log;
 
-class DropBoxFileList {
-	private final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
+public class DropBoxFileList {
+	final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
 	//final static String uri = "http://dl.dropbox.com/u/3074981/%s.txt";
-	private static List<FileInfo> fileList = null;
+	static List<FileInfo> fileList = null;
 	private static MediaDownloaderService caller;
 
 	public static void startDownLoadFileList(int offset, MediaDownloaderService mediaDownloaderService) {
@@ -40,7 +40,7 @@ class DropBoxFileList {
 		startDownloadFileList(offset);
 	}
 	
-	private synchronized static void pushFileList(String fileListJson, String dateFilter) {
+	public synchronized static void pushFileList(String fileListJson, String dateFilter) {
 		try {	
 			caller.pushFileList(parseFileListJson(fileListJson, dateFilter));
 		} catch (Exception e) {
@@ -66,7 +66,6 @@ class DropBoxFileList {
 			File localFileList = new File( storagePublicDirectory.getAbsolutePath() + File.separatorChar + title + caller.data.selectedLanguage + ".txt");
 			startGetUrlTextContent(url, localFileList, title);
 		} catch (MalformedURLException e) {
-            Log.d("startDownloadFileList", "The URL is wrong", e);
 		}
 	}
 

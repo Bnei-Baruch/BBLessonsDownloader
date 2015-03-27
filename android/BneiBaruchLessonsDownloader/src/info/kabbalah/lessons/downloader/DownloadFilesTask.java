@@ -6,9 +6,9 @@ import java.net.URL;
 import android.os.AsyncTask;
 import android.util.Log;
 
-class DownloadFilesTask extends AsyncTask<FileProcessor, Integer, Long> {
-	private boolean failed = false;
-	private final MediaDownloaderService mediaDownloaderService;
+public class DownloadFilesTask extends AsyncTask<FileProcessor, Integer, Long> {
+	boolean failed = false;
+	MediaDownloaderService mediaDownloaderService;
 	private int contentLength;
 	private String fileName;
 	
@@ -63,13 +63,11 @@ class DownloadFilesTask extends AsyncTask<FileProcessor, Integer, Long> {
 				values[0] < 0, fileName);
 	}
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//	public boolean isFailed()
-//	{
-//		return failed;
-//	}
-// --Commented out by Inspection STOP (26/03/2015 14:00)
-
+	public boolean isFailed()
+	{
+		return failed;
+	}
+	
 	protected void onPostExecute(Long result) {
 		mediaDownloaderService.cleanUp();
 	}

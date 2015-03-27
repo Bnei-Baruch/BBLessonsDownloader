@@ -4,21 +4,19 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class FileProcessor  implements Parcelable {
-	private FileInfo info = null;
+	FileInfo info = null;
 
 	public FileProcessor(FileInfo info) {
 		super();
 		this.info = info;		
 	}
-	private FileProcessor(Parcel source) {
+	public FileProcessor(Parcel source) {
 		super();
 		info = source.readParcelable(null);		
 	}
-// --Commented out by Inspection START (26/03/2015 14:01):
-//	public boolean complete() {
-//		return info.isDownloaded();
-//	}
-// --Commented out by Inspection STOP (26/03/2015 14:01)
+	public boolean complete() {
+		return info.isDownloaded();
+	}
 	public FileInfo getFileInfo() {
 		return info;
 	}

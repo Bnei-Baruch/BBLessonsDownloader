@@ -39,7 +39,7 @@ public class Downloader extends Activity
 	
 	public class MediaScannerClient implements MediaScannerConnectionClient {
 
-		private final Downloader instance;
+		private Downloader instance;
 
 		public MediaScannerClient(Downloader downloader) {
 			instance = downloader;
@@ -55,18 +55,19 @@ public class Downloader extends Activity
 
 	}
 
-	private MediaDownloaderService mBoundService;
+	MediaDownloaderService mBoundService;
 
 	private Handler mHandler = null;
 	private boolean mIsBound = false;
 	private boolean bMediaScannerReady = false;
 	private FileProcessorArrayAdapter processedFiles = null;
-	private final Map<String, FileProcessor> nameIndex = new HashMap<String, FileProcessor>();
-    private Uri todayPlaylist = null;
+	private Map<String, FileProcessor> nameIndex = new HashMap<String, FileProcessor>();
+	private ListView fileList = null;
+	private Uri todayPlaylist = null;
 	private MediaScannerConnection mediaScannerConnection;
-	private final DownloaderPreferenceData data = new DownloaderPreferenceData();
+	private DownloaderPreferenceData data = new DownloaderPreferenceData();
 
-	private final ServiceConnection mConnection = new ServiceConnection() {
+	private ServiceConnection mConnection = new ServiceConnection() {
 	    public void onServiceConnected(ComponentName className, IBinder service) {
 	        // This is called when the connection with the service has been
 	        // established, giving us the service object we can use to
@@ -106,7 +107,7 @@ public class Downloader extends Activity
 	    mIsBound = true;
 	}
 
-	void onScanCompleted(String path, Uri uri) {
+	public void onScanCompleted(String path, Uri uri) {
 
 		final FileInfo fileInfo = nameIndex.get(path).getFileInfo();
 
@@ -133,7 +134,7 @@ public class Downloader extends Activity
 
 	}
 
-	void onMediaScannerConnected() {
+	public void onMediaScannerConnected() {
 		bMediaScannerReady = true;
 	}
 
@@ -164,7 +165,13 @@ public class Downloader extends Activity
 			Log.e(this.getClass().getName(), "Couldn't restore state", e);
 		}
 	}
-
+    @Override
+	protected void onSaveInstanceState (Bundle outState)
+	{
+    	super.onSaveInstanceState(outState);
+		//outState.putParcelableArrayList("processedFiles", processedFiles.getList());
+	}
+    
     protected void onPause()
     {
     	super.onPause();
@@ -194,25 +201,25 @@ public class Downloader extends Activity
         PreferenceManager.getDefaultSharedPreferences(this)
         			.registerOnSharedPreferenceChangeListener(this);
         getPreferencesData().readPreferences(this);
-
-        ListView fileList = (ListView) findViewById(R.id.fileListId);
+        
+        fileList = (ListView) findViewById(R.id.fileListId);
         
         fileList.setOnItemClickListener(new OnItemClickListener() {
 
-            public void onItemClick(AdapterView<?> listView,
-                                    View view, int position,
-                                    long id) {
-                FileProcessor fp = (FileProcessor) listView.getItemAtPosition(position);
-                if (fp == null) return;
-                FileInfo fileInfo = fp.getFileInfo();
-                if (fileInfo == null) return;
-                Intent intentToPlayMedia = new Intent(Intent.ACTION_DEFAULT);
-                intentToPlayMedia.setDataAndType(
-                        Uri.parse("file://" + fileInfo.getLocalPath()),
-                        fileInfo.getMimeType());
-                startActivity(intentToPlayMedia);
-            }
-        });
+			public void onItemClick(AdapterView<?> listView, 
+					View view, int position,
+					long id) {
+				FileProcessor fp = (FileProcessor) listView.getItemAtPosition(position);
+				if(fp == null) return;
+				FileInfo fileInfo = fp.getFileInfo();
+				if(fileInfo == null) return;
+				Intent intentToPlayMedia = new Intent(Intent.ACTION_DEFAULT);
+		        intentToPlayMedia.setDataAndType(
+		        		Uri.parse("file://" + fileInfo.getLocalPath()),
+		        		fileInfo.getMimeType());
+		        startActivity(intentToPlayMedia);
+			}
+		});
         
         mHandler = new Handler();
 		mediaScannerConnection = new MediaScannerConnection(this, new MediaScannerClient(this));
@@ -242,45 +249,36 @@ public class Downloader extends Activity
         
     }
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//    public void onPlayNowClick(View v)
-//    {
-//    	try {
-//        	if(todayPlaylist != null)
-//        	{
-//        		Intent intentToPlayMedia = new Intent(Intent.ACTION_DEFAULT);
-//                intentToPlayMedia.setDataAndType(todayPlaylist, MediaStore.Audio.Playlists.CONTENT_TYPE);
-//                startActivity(intentToPlayMedia);
-//        	}
-//    	} catch (Exception e) {
-//			Log.e("onPlayNowClick", "Cannot play playlist.", e);
-//		}
-//    }
-// --Commented out by Inspection STOP (26/03/2015 14:00)
-
-// --Commented out by Inspection START (26/03/2015 14:00):
-//    public void onCheckNowClick(View v)
-//    {
-//        if(mBoundService != null)
-//    	    mBoundService.checkNow();
-//    }
-// --Commented out by Inspection STOP (26/03/2015 14:00)
-
-// --Commented out by Inspection START (26/03/2015 14:00):
-//    public void onDonateClick(View v)
-//    {
-//    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kabbalah.info/donations/"));
-//    	startActivity(browserIntent);
-//    }
-// --Commented out by Inspection STOP (26/03/2015 14:00)
-
-// --Commented out by Inspection START (26/03/2015 14:00):
-//    public void onCheckYesterdayClick(View v)
-//    {
-//    	mBoundService.checkYesterday();
-//    }
-// --Commented out by Inspection STOP (26/03/2015 14:00)
-
+    public void onPlayNowClick(View v)
+    {
+    	try {
+        	if(todayPlaylist != null)
+        	{
+        		Intent intentToPlayMedia = new Intent(Intent.ACTION_DEFAULT);
+                intentToPlayMedia.setDataAndType(todayPlaylist, MediaStore.Audio.Playlists.CONTENT_TYPE);
+                startActivity(intentToPlayMedia);
+        	}    		
+    	} catch (Exception e) {
+			Log.e("onPlayNowClick", "Cannot play playlist.", e);
+		}
+    }
+    
+    public void onCheckNowClick(View v)
+    {
+    	mBoundService.checkNow();
+    }
+    
+    public void onDonateClick(View v)
+    {
+    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kabbalah.info/donations/"));
+    	startActivity(browserIntent);
+    }
+    
+    public void onCheckYesterdayClick(View v)
+    {
+    	mBoundService.checkYesterday();
+    }
+    
     public boolean onCreateOptionsMenu (Menu menu)
 	{
 	    MenuInflater inflater = getMenuInflater();
@@ -356,7 +354,7 @@ public class Downloader extends Activity
 		rescanMedia(fileInfo);
 	}
 	
-	Uri createPlaylist(String name)
+	public Uri createPlaylist(String name)
 	{
         ContentResolver resolver = getContentResolver();
         int id = idForplaylist(name);
@@ -389,17 +387,15 @@ public class Downloader extends Activity
         return id;
 	}
 
-	boolean createPlaylistForTodayFiles() {
+	public boolean createPlaylistForTodayFiles() {
 		return createTodayPlaylist() && createPlaylistForPastNDay(0);
 	}
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//	public boolean createPlaylistForYesterdayFiles() {
-//		return createPlaylistForPastNDay(1);
-//	}
-// --Commented out by Inspection STOP (26/03/2015 14:00)
+	public boolean createPlaylistForYesterdayFiles() {
+		return createPlaylistForPastNDay(1);
+	}
 
-	synchronized boolean createPlaylistForPastNDay(int N) {
+	public synchronized boolean createPlaylistForPastNDay(int N) {
 		String folderPath = getFolderPath(Calendar.getInstance(), -N);
 		String like = "%" + folderPath + "%lesson%";
 		long[] songs = MusicUtils.getSongIdLikeName(this, like);
@@ -415,7 +411,7 @@ public class Downloader extends Activity
 		}
 	}
 
-	synchronized boolean createTodayPlaylist() {
+	public synchronized boolean createTodayPlaylist() {
 		String folderPath = getFolderPath(Calendar.getInstance(), 0);
 		String like = "%" + folderPath + "%lesson%";
 		long[] songs = MusicUtils.getSongIdLikeName(this, like);
@@ -431,7 +427,7 @@ public class Downloader extends Activity
 		}
 	}
 
-	void rescanMedia(FileInfo fi) {
+	public void rescanMedia(FileInfo fi) {
 		nameIndex.put(fi.getLocalPath(), new FileProcessor(fi));
 		if(bMediaScannerReady && mediaScannerConnection.isConnected())
 		{
@@ -451,7 +447,7 @@ public class Downloader extends Activity
 		}
 	}
 
-	DownloaderPreferenceData getPreferencesData() {
+	public DownloaderPreferenceData getPreferencesData() {
 		return data;
 	}
 

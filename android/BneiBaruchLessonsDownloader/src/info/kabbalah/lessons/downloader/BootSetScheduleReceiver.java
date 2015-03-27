@@ -32,11 +32,12 @@ public class BootSetScheduleReceiver extends BroadcastReceiver {
 				 operation);
 	}
 
-	private static PendingIntent buildSyncIntent(Context context) {
+	public static PendingIntent buildSyncIntent(Context context) {
 		Intent intent = new Intent(
 				 MediaDownloaderService.INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES);
-
-        return PendingIntent.getService(context, 0, intent, 0);
+		 
+		PendingIntent operation = PendingIntent.getService(context, 0, intent, 0);
+		return operation;
 	}
 
 }

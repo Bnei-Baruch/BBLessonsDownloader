@@ -14,7 +14,7 @@ import java.net.URL;
 
 import android.util.Log;
 
-class FileDownloader extends FileSystemUtilities {
+public class FileDownloader extends FileSystemUtilities {
 	private DownloadFilesTask downloadFilesTask = null;
 
 	public long downloadFile(FileInfo fileInfo, DownloadFilesTask downloadFilesTask)
@@ -51,8 +51,8 @@ class FileDownloader extends FileSystemUtilities {
 			return size;
 	}
 
-	long getFileFromURL(String url, String localPath, long downloadedSize) throws
-            IOException {
+	public long getFileFromURL(String url, String localPath, long downloadedSize) throws URISyntaxException,
+			MalformedURLException, FileNotFoundException, IOException {
 		/* Open a connection to that URL. */
 		HttpURLConnection inp = MediaDownloaderService.getConnectionWithProxy(new URL(url));
 		

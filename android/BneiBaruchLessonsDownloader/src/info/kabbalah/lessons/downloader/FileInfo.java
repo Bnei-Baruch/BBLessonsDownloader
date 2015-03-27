@@ -22,13 +22,11 @@ public class FileInfo  implements Parcelable {
 	private boolean existed;
 	private long lastModified;
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//	public FileInfo(Node file) {
-//		name = file.getAttributes().getNamedItem("Name").getNodeValue();
-//		date = file.getAttributes().getNamedItem("Date").getNodeValue();
-//		url = file.getAttributes().getNamedItem("Url").getNodeValue();
-//	}
-// --Commented out by Inspection STOP (26/03/2015 14:00)
+	public FileInfo(Node file) {
+		name = file.getAttributes().getNamedItem("Name").getNodeValue();
+		date = file.getAttributes().getNamedItem("Date").getNodeValue();
+		url = file.getAttributes().getNamedItem("Url").getNodeValue();
+	}
 
     public FileInfo(String _date, JSONObject file) throws JSONException {
         date= _date;
@@ -40,7 +38,7 @@ public class FileInfo  implements Parcelable {
         lastModified= mtime.toMillis(false);
     }
 
-	private FileInfo(Parcel in) {
+	public FileInfo(Parcel in) {
 		name = in.readString();
 		date = in.readString();
 		url = in.readString();
@@ -58,31 +56,25 @@ public class FileInfo  implements Parcelable {
 		url = "";
 	}
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-// --Commented out by Inspection STOP (26/03/2015 14:00)
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String getName() {
 		return name;
 	}
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//	public void setDate(String date) {
-//		this.date = date;
-//	}
-// --Commented out by Inspection STOP (26/03/2015 14:00)
+	public void setDate(String date) {
+		this.date = date;
+	}
 
 	public String getDate() {
 		return date;
 	}
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//	public void setUrl(String url) {
-//		this.url = url;
-//	}
-// --Commented out by Inspection STOP (26/03/2015 14:00)
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 	public String getUrl() {
 		return url;
@@ -135,11 +127,9 @@ public class FileInfo  implements Parcelable {
 		return fileSize;
 	}
 
-// --Commented out by Inspection START (26/03/2015 14:01):
-//	public boolean isDownloaded() {
-//		return downloadedSize > 0 && downloadedSize == fileSize;
-//	}
-// --Commented out by Inspection STOP (26/03/2015 14:01)
+	public boolean isDownloaded() {
+		return downloadedSize > 0 && downloadedSize == fileSize;
+	}
 
 	public String getMimeType() {
 		return this.name.contains(".mp3") ? "audio/*" : "video/*";
@@ -149,11 +139,9 @@ public class FileInfo  implements Parcelable {
 		this.uri = uri;
 	}
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//	public Uri getUri() {
-//		return uri;
-//	}
-// --Commented out by Inspection STOP (26/03/2015 14:00)
+	public Uri getUri() {
+		return uri;
+	}
 
 	public void setExisted(boolean b) {
 		existed = b;
