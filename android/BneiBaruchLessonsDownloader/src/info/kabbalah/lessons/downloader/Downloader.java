@@ -61,7 +61,7 @@ public class Downloader extends Activity
 	private boolean mIsBound = false;
 	private boolean bMediaScannerReady = false;
 	private FileProcessorArrayAdapter processedFiles = null;
-	private final Map<String, FileProcessor> nameIndex = new HashMap<String, FileProcessor>();
+	private final Map<String, FileProcessor> nameIndex = new HashMap<>();
     private Uri todayPlaylist = null;
 	private MediaScannerConnection mediaScannerConnection;
 	private final DownloaderPreferenceData data = new DownloaderPreferenceData();
@@ -232,7 +232,7 @@ public class Downloader extends Activity
     	}
 
         if(files == null)
-    		files =*/ new ArrayList<FileProcessor>();
+    		files =*/ new ArrayList<>();
     	
 		processedFiles = new FileProcessorArrayAdapter(Downloader.this, 
 				R.id.fileListId, files);
@@ -242,44 +242,36 @@ public class Downloader extends Activity
         
     }
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//    public void onPlayNowClick(View v)
-//    {
-//    	try {
-//        	if(todayPlaylist != null)
-//        	{
-//        		Intent intentToPlayMedia = new Intent(Intent.ACTION_DEFAULT);
-//                intentToPlayMedia.setDataAndType(todayPlaylist, MediaStore.Audio.Playlists.CONTENT_TYPE);
-//                startActivity(intentToPlayMedia);
-//        	}
-//    	} catch (Exception e) {
-//			Log.e("onPlayNowClick", "Cannot play playlist.", e);
-//		}
-//    }
-// --Commented out by Inspection STOP (26/03/2015 14:00)
+    public void onPlayNowClick(View v)
+    {
+   	try {
+        	if(todayPlaylist != null)
+        	{
+        		Intent intentToPlayMedia = new Intent(Intent.ACTION_DEFAULT);
+                intentToPlayMedia.setDataAndType(todayPlaylist, MediaStore.Audio.Playlists.CONTENT_TYPE);
+                startActivity(intentToPlayMedia);
+        	}
+    	} catch (Exception e) {
+			Log.e("onPlayNowClick", "Cannot play playlist.", e);
+		}
+    }
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//    public void onCheckNowClick(View v)
-//    {
-//        if(mBoundService != null)
-//    	    mBoundService.checkNow();
-//    }
-// --Commented out by Inspection STOP (26/03/2015 14:00)
+    public void onCheckNowClick(View v)
+    {
+        if(mBoundService != null)
+    	    mBoundService.checkNow();
+    }
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//    public void onDonateClick(View v)
-//    {
-//    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kabbalah.info/donations/"));
-//    	startActivity(browserIntent);
-//    }
-// --Commented out by Inspection STOP (26/03/2015 14:00)
+    public void onDonateClick(View v)
+    {
+    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kabbalah.info/donations/"));
+    	startActivity(browserIntent);
+    }
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//    public void onCheckYesterdayClick(View v)
-//    {
-//    	mBoundService.checkYesterday();
-//    }
-// --Commented out by Inspection STOP (26/03/2015 14:00)
+    public void onCheckYesterdayClick(View v)
+    {
+    	mBoundService.checkYesterday();
+    }
 
     public boolean onCreateOptionsMenu (Menu menu)
 	{
@@ -320,7 +312,7 @@ public class Downloader extends Activity
 		processedFiles.clear();
 		processedFiles.notifyDataSetChanged();
 
-		ArrayList<FileProcessor> fileList = new ArrayList<FileProcessor>();
+		ArrayList<FileProcessor> fileList = new ArrayList<>();
 		mBoundService.loadFilesFromFolder(folder, fileList);
 		for(FileProcessor fp : fileList)
 		{
@@ -334,7 +326,7 @@ public class Downloader extends Activity
 		processedFiles.clear();
 		processedFiles.notifyDataSetChanged();
 
-		ArrayList<FileProcessor> fileList = new ArrayList<FileProcessor>();
+		ArrayList<FileProcessor> fileList = new ArrayList<>();
 		mBoundService.loadFilesFromFolder(folder, fileList);
 		for(FileProcessor fp : fileList)
 		{
