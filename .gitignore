@@ -21,3 +21,5 @@
 *.suo
 */.gradle
 */.idea
+.DS_Store
+*/.DS_Store
