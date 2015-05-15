@@ -31,6 +31,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+
 public class MediaDownloaderService	extends android.app.Service {
     private NotificationManager mNM;
     
@@ -56,7 +57,7 @@ public class MediaDownloaderService	extends android.app.Service {
 	private final ArrayList<FileProcessor> filesToDownload = new ArrayList<FileProcessor>();
 	private final ArrayList<FileProcessor> processedFiles = new ArrayList<FileProcessor>();
 
-    private int PLAY_NOTIFICATION_ID = R.string.local_service_started + 123;
+    private int PLAY_NOTIFICATION_ID = string.local_service_started + 123;
 
 	private WakeLock powerlock;
 
@@ -83,7 +84,7 @@ public class MediaDownloaderService	extends android.app.Service {
     @Override
     public void onCreate() {
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        
+
         data.readPreferences(this);
         
         WifiManager wifimanager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -145,23 +146,17 @@ public class MediaDownloaderService	extends android.app.Service {
      */
     private void showNotification(FileInfo fileInfo, Intent intentToPlayVideo) {
         // In this sample, we'll use the same text for the ticker and the expanded notification
-        CharSequence text = getText(intentToPlayVideo == null ? R.string.file_failed : R.string.file_downloaded);
+        CharSequence text = getText(intentToPlayVideo == null ? string.file_failed : string.file_downloaded);
 
-        // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification(R.drawable.icon, text,
-                System.currentTimeMillis());
-        
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        mNM.notify(PLAY_NOTIFICATION_ID++,
+                new Notification.Builder(this)
+                .setSmallIcon(R.drawable.nicon)
+                .setAutoCancel(true)
+                .setContentIntent(PendingIntent.getActivity(this, 0, intentToPlayVideo, 0))
+                .setContentTitle(fileInfo.getName())
+                .setContentText(text)
+                        .build());
 
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-        		intentToPlayVideo, 0);
-
-        // Set the info for the views that show in the notification panel.
-        notification.setLatestEventInfo(this, fileInfo.getName(),
-                       text, contentIntent);
-        // Send the notification.
-        mNM.notify(PLAY_NOTIFICATION_ID++, notification);
     }
 
 	void startDownload() {
@@ -179,22 +174,17 @@ public class MediaDownloaderService	extends android.app.Service {
 	}
 
 	private void sendDownloadNotification(int max, int cur, boolean indeterminate, String fileName) {
-		CharSequence text = getText(R.string.local_service_started);
-        Notification downloadNotification = new Notification(R.drawable.icon, text,
-                System.currentTimeMillis());
+		CharSequence text = getText(string.local_service_started);
 
-        downloadNotification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
-
-        RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.download_notification);
-		notificationView.setImageViewResource(R.id.image, R.drawable.icon);
-		notificationView.setTextViewText(R.id.notificationProgressText, "Downloading " + fileName);
-		notificationView.setProgressBar(R.id.notificationProgressBar, max, cur, indeterminate);
-		downloadNotification.contentView = notificationView;
-		
-		downloadNotification.contentIntent = PendingIntent.getActivity(this, 0, 
-				new Intent(this, Downloader.class), 0);
-
-		mNM.notify(R.string.DownloadingFile, downloadNotification);
+        mNM.notify(string.DownloadingFile, new Notification.Builder(this)
+                .setSmallIcon(R.drawable.nicon)
+                .setAutoCancel(true)
+                .setOngoing(true)
+                .setProgress(max, cur, indeterminate)
+                .setContentTitle("Downloading")
+                .setContentText(fileName)
+                .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, Downloader.class), 0))
+                .build());
 	}
 
 	public void setProgressBar(int max, int progress, boolean indeterminate, String fileName) {
@@ -229,7 +219,7 @@ public class MediaDownloaderService	extends android.app.Service {
 	public void cleanUp() {
         if(getDownloader() != null)
         	getDownloader().finishedDownload();
-		mNM.cancel(R.string.DownloadingFile);
+		mNM.cancel(string.DownloadingFile);
 		wifilock.release();
 		powerlock.release();
 		task = null;

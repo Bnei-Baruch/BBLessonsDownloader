@@ -19,11 +19,7 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int ic_menu_preferences=0x7f020000;
-        public static final int ic_menu_recent_history=0x7f020001;
-        public static final int ic_menu_refresh=0x7f020002;
-        public static final int ic_menu_today=0x7f020003;
-        public static final int icon=0x7f020004;
+        public static final int icon=0x7f020000;
     }
     public static final class id {
         public static final int Donate=0x7f080004;
@@ -49,54 +45,57 @@ public final class R {
         public static final int menu=0x7f070000;
     }
     public static final class string {
-        public static final int CannotPlayFile=0x7f060002;
-        public static final int DownloadingFile=0x7f060003;
+        /**  string name="CannotPlayFile">The file couldn\'t be played</string 
+         */
+        public static final int DownloadingFile=0x7f060002;
         public static final int NoFileFound=0x7f060001;
         public static final int app_name=0x7f060000;
-        public static final int bb_tree=0x7f06002b;
-        public static final int check=0x7f06001a;
-        public static final int check_both=0x7f060023;
-        public static final int check_cellular=0x7f060022;
-        public static final int check_now=0x7f060018;
-        public static final int check_wifi_only=0x7f060024;
-        public static final int check_yesterday=0x7f060019;
-        public static final int delete_old_files=0x7f06001c;
+        public static final int bb_tree=0x7f060025;
+        public static final int check=0x7f060014;
+        public static final int check_both=0x7f06001d;
+        public static final int check_cellular=0x7f06001c;
+        public static final int check_now=0x7f060012;
+        public static final int check_wifi_only=0x7f06001e;
+        public static final int check_yesterday=0x7f060013;
+        public static final int delete_old_files=0x7f060016;
         /**  string name="don_t_download_high_quality_audio">"Don't download high quality audio"</string>
 	<string name="download_high_quality_audio">Download high quality audio</string
          */
-        public static final int don_t_download_low_quality_audio=0x7f060015;
-        public static final int don_t_download_video=0x7f06001d;
-        public static final int donate=0x7f06002c;
-        public static final int download_low_quality_audio=0x7f060016;
-        public static final int download_mp3=0x7f06000c;
-        public static final int download_mp4=0x7f06000e;
-        public static final int download_video=0x7f06001e;
-        public static final int file_downloaded=0x7f060009;
-        public static final int file_failed=0x7f06000a;
-        public static final int file_mp3=0x7f06002a;
-        public static final int files_will_be_downoaded_from_the_beginning=0x7f06001f;
-        public static final int files_will_be_resumed_from_the_point_of_failure=0x7f060021;
-        public static final int high_quality=0x7f06000d;
-        public static final int input_local_folder_name=0x7f06001b;
-        public static final int language=0x7f06000b;
-        public static final int local_folder_name=0x7f06000f;
-        public static final int local_service_connected=0x7f060007;
-        public static final int local_service_disconnected=0x7f060008;
-        public static final int local_service_label=0x7f060006;
-        public static final int local_service_started=0x7f060004;
-        public static final int local_service_stopped=0x7f060005;
-        public static final int morninglessons=0x7f060017;
-        public static final int proxy_disabled=0x7f060028;
-        public static final int proxy_enabled=0x7f060027;
-        public static final int proxy_host_name=0x7f060025;
-        public static final int proxy_port_number=0x7f060026;
-        public static final int resume_failed_downloads=0x7f060020;
-        public static final int settings_title=0x7f060012;
-        public static final int show_today=0x7f060013;
-        public static final int show_today_condensed=0x7f060014;
-        public static final int show_yesterday=0x7f060010;
-        public static final int show_yesterday_condensed=0x7f060011;
-        public static final int use_http_proxy=0x7f060029;
+        public static final int don_t_download_low_quality_audio=0x7f06000f;
+        public static final int don_t_download_video=0x7f060017;
+        public static final int donate=0x7f060026;
+        public static final int download_low_quality_audio=0x7f060010;
+        public static final int download_mp3=0x7f060007;
+        /**  string name="high_quality">High Quality</string 
+         */
+        public static final int download_mp4=0x7f060008;
+        public static final int download_video=0x7f060018;
+        /**  string name="local_service_stopped">Bnei Baruch Media Downloader Stopped</string 
+ string name="local_service_label">Bnei Baruch Media Downloading</string 
+ string name="local_service_connected">Bnei Baruch Media Downloader Connected</string 
+ string name="local_service_disconnected">Bnei Baruch Media Downloader Disconnected</string 
+         */
+        public static final int file_downloaded=0x7f060004;
+        public static final int file_failed=0x7f060005;
+        public static final int file_mp3=0x7f060024;
+        public static final int files_will_be_downoaded_from_the_beginning=0x7f060019;
+        public static final int files_will_be_resumed_from_the_point_of_failure=0x7f06001b;
+        public static final int input_local_folder_name=0x7f060015;
+        public static final int language=0x7f060006;
+        public static final int local_folder_name=0x7f060009;
+        public static final int local_service_started=0x7f060003;
+        public static final int morninglessons=0x7f060011;
+        public static final int proxy_disabled=0x7f060022;
+        public static final int proxy_enabled=0x7f060021;
+        public static final int proxy_host_name=0x7f06001f;
+        public static final int proxy_port_number=0x7f060020;
+        public static final int resume_failed_downloads=0x7f06001a;
+        public static final int settings_title=0x7f06000c;
+        public static final int show_today=0x7f06000d;
+        public static final int show_today_condensed=0x7f06000e;
+        public static final int show_yesterday=0x7f06000a;
+        public static final int show_yesterday_condensed=0x7f06000b;
+        public static final int use_http_proxy=0x7f060023;
     }
     public static final class xml {
         public static final int preferences=0x7f040000;
