@@ -1,6 +1,23 @@
 package info.kabbalah.lessons.downloader;
 
-import info.kabbalah.lessons.downloader.R.string;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.WifiLock;
+import android.os.Binder;
+import android.os.Environment;
+import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,23 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
-import android.net.wifi.WifiManager;
-import android.net.wifi.WifiManager.WifiLock;
-import android.os.Binder;
-import android.os.Environment;
-import android.os.IBinder;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
-import android.util.Log;
-import android.widget.RemoteViews;
-import android.widget.Toast;
+import info.kabbalah.lessons.downloader.R.string;
 
 
 public class MediaDownloaderService	extends android.app.Service {
@@ -54,8 +55,8 @@ public class MediaDownloaderService	extends android.app.Service {
 
 	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF = "info.kabbalah.lessons.downloader.Network.WiFi.Off";
 
-	private final ArrayList<FileProcessor> filesToDownload = new ArrayList<FileProcessor>();
-	private final ArrayList<FileProcessor> processedFiles = new ArrayList<FileProcessor>();
+	private final ArrayList<FileProcessor> filesToDownload = new ArrayList<>();
+	private final ArrayList<FileProcessor> processedFiles = new ArrayList<>();
 
     private int PLAY_NOTIFICATION_ID = string.local_service_started + 123;
 
@@ -100,24 +101,25 @@ public class MediaDownloaderService	extends android.app.Service {
         Log.i("LocalService", "Received start id " + startId + ": " + intent);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
-        if(INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON.compareTo(intent.getAction()) == 0) {
-        	this.bWifiConnected = true;
-        } else if (INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF.compareTo(intent.getAction()) == 0) {
-        	this.bWifiConnected = false;        	
-        } else if (INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES.compareTo(intent.getAction()) == 0) {
-	        data.readPreferences(this);
-	        long hours = Calendar.getInstance().getTimeInMillis() / 1000 / 60 / 60;
+       	this.bWifiConnected = isWiFiConnected(getApplicationContext());
+        data.readPreferences(this);
+        long hours = Calendar.getInstance().getTimeInMillis() / 1000 / 60 / 60;
 //	        long hours = Calendar.getInstance().getTimeInMillis() / 1000 / 10;
-	        if(data.checkSchedule != 0 && hours % data.checkSchedule == 0)
-	        {
-	        	// Check WiFi status
-	        	if(data.checkWithCellular || this.bWifiConnected) {
-	        		checkAll();
-	        	}
-	        }
+        if(data.checkSchedule != 0 && hours % data.checkSchedule == 0)
+        {
+            // Check WiFi status
+            if(data.checkWithCellular || this.bWifiConnected) {
+                checkAll();
+            }
         }
         return START_STICKY;
      }
+
+    private boolean isWiFiConnected(Context ctx) {
+        ConnectivityManager cm = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        return ni.isConnected() && ni.getType() == ConnectivityManager.TYPE_WIFI;
+    }
 
     private void checkAll() {
     	retrieveProxySettings();
@@ -141,8 +143,8 @@ public class MediaDownloaderService	extends android.app.Service {
 
     /**
      * Show a notification while this service is running.
-     * @param intentToPlayVideo 
-     * @param fileInfo 
+     * @param intentToPlayVideo - what to start to play
+     * @param fileInfo - file information
      */
     private void showNotification(FileInfo fileInfo, Intent intentToPlayVideo) {
         // In this sample, we'll use the same text for the ticker and the expanded notification
@@ -153,8 +155,8 @@ public class MediaDownloaderService	extends android.app.Service {
                 .setSmallIcon(R.drawable.nicon)
                 .setAutoCancel(true)
                 .setContentIntent(PendingIntent.getActivity(this, 0, intentToPlayVideo, 0))
-                .setContentTitle(fileInfo.getName())
-                .setContentText(text)
+                .setContentTitle(text)
+                .setContentText(fileInfo.getName())
                         .build());
 
     }
@@ -347,7 +349,8 @@ public class MediaDownloaderService	extends android.app.Service {
 			}
 		} else {
 			Log.w("deleteFilesOlderThan..", "Files were not deleted, directory " + dirWay + " does'nt exist!");
-			directory.mkdirs();
+			if(! directory.mkdirs())
+                Log.e("deleteFilesOlderThanNdays", "Cannot create directory: " + directory);
 		}
 	}
 
@@ -359,7 +362,8 @@ public class MediaDownloaderService	extends android.app.Service {
 			if(listFile.isDirectory())
 			{
 				filesRemoved = removeFiles(listFile, purgeTime) || filesRemoved;
-				listFile.delete();
+				if(! listFile.delete())
+                    Log.e("removeFiles", "Unable to delete directory: " + listFile);
 			}
 			if(listFile.lastModified() < purgeTime) {
 				if(!listFile.delete()) {
