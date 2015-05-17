@@ -350,7 +350,7 @@ public class MediaDownloaderService	extends android.app.Service {
 		} else {
 			Log.w("deleteFilesOlderThan..", "Files were not deleted, directory " + dirWay + " does'nt exist!");
 			if(! directory.mkdirs())
-                Log.e("deleteFilesOlderThanNdays", "Cannot create directory: " + directory);
+                Log.e("deleteFilesOlderThan...", "Cannot create directory: " + directory);
 		}
 	}
 
