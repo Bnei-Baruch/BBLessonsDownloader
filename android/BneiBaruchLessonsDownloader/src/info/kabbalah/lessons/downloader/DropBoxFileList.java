@@ -1,5 +1,13 @@
 package info.kabbalah.lessons.downloader;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
+import org.apache.http.util.ByteArrayBuffer;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,14 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
-
-import org.apache.http.util.ByteArrayBuffer;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.os.AsyncTask;
-import android.util.Log;
 
 class DropBoxFileList {
 	private final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";

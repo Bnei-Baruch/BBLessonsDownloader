@@ -34,52 +34,35 @@ import info.kabbalah.lessons.downloader.R.string;
 
 
 public class MediaDownloaderService	extends android.app.Service {
-    private NotificationManager mNM;
-    
-	public final DownloaderPreferenceData data = new DownloaderPreferenceData();
-    
-    private WifiLock wifilock;
-	private DownloadFilesTask task = null;
-
+	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES = "info.kabbalah.lessons.downloader.CheckFiles";
+	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON = "info.kabbalah.lessons.downloader.Network.WiFi.On";
+	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF = "info.kabbalah.lessons.downloader.Network.WiFi.Off";
+	private static boolean proxyEnabled;
+	private static String proxyHost;
+	private static int proxyPort;
+    public final DownloaderPreferenceData data = new DownloaderPreferenceData();
     // This is the object that receives interactions from clients.  See
     // RemoteService for a more complete example.
     private final IBinder mBinder = new LocalBinder();
-
+    private final ArrayList<FileProcessor> filesToDownload = new ArrayList<>();
+    private final ArrayList<FileProcessor> processedFiles = new ArrayList<>();
+    private NotificationManager mNM;
+    private WifiLock wifilock;
+    private DownloadFilesTask task = null;
     private long time;
-
-	private Downloader downloader = null;
-
-	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES = "info.kabbalah.lessons.downloader.CheckFiles";
-
-	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON = "info.kabbalah.lessons.downloader.Network.WiFi.On";
-
-	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF = "info.kabbalah.lessons.downloader.Network.WiFi.Off";
-
-	private final ArrayList<FileProcessor> filesToDownload = new ArrayList<>();
-	private final ArrayList<FileProcessor> processedFiles = new ArrayList<>();
-
+    private Downloader downloader = null;
     private int PLAY_NOTIFICATION_ID = string.local_service_started + 123;
+    private WakeLock powerlock;
+    private boolean bWifiConnected;
 
-	private WakeLock powerlock;
-
-	private boolean bWifiConnected;
-
-	private static boolean proxyEnabled;
-
-	private static String proxyHost;
-
-	private static int proxyPort;
-
-
-    /**
-     * Class for clients to access.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with
-     * IPC.
-     */
-    public class LocalBinder extends Binder {
-    	public MediaDownloaderService getService() {
-            return MediaDownloaderService.this;
-        }
+    public static HttpURLConnection getConnectionWithProxy(URL url)
+            throws IOException {
+        if (proxyEnabled) {
+            Proxy p = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
+                    InetAddress.getByName(proxyHost), proxyPort));
+            return (HttpURLConnection) url.openConnection(p);
+        } else
+            return (HttpURLConnection) url.openConnection();
     }
 
     @Override
@@ -118,7 +101,7 @@ public class MediaDownloaderService	extends android.app.Service {
     private boolean isWiFiConnected(Context ctx) {
         ConnectivityManager cm = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
-        return ni.isConnected() && ni.getType() == ConnectivityManager.TYPE_WIFI;
+        return ni != null && ni.isConnected() && ni.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
     private void checkAll() {
@@ -152,11 +135,11 @@ public class MediaDownloaderService	extends android.app.Service {
 
         mNM.notify(PLAY_NOTIFICATION_ID++,
                 new Notification.Builder(this)
-                .setSmallIcon(R.drawable.nicon)
-                .setAutoCancel(true)
-                .setContentIntent(PendingIntent.getActivity(this, 0, intentToPlayVideo, 0))
-                .setContentTitle(text)
-                .setContentText(fileInfo.getName())
+                        .setSmallIcon(R.drawable.nicon)
+                        .setAutoCancel(true)
+                        .setContentIntent(PendingIntent.getActivity(this, 0, intentToPlayVideo, 0))
+                        .setContentTitle(text)
+                        .setContentText(fileInfo.getName())
                         .build());
 
     }
@@ -227,12 +210,12 @@ public class MediaDownloaderService	extends android.app.Service {
 		task = null;
 	}
 
+    Downloader getDownloader() {
+        return downloader;
+    }
+
 	public void setDownloader(Downloader downloader) {
 		this.downloader = downloader;
-	}
-
-	Downloader getDownloader() {
-		return downloader;
 	}
 	
 	private void downloadFileList(int offset) {
@@ -381,21 +364,21 @@ public class MediaDownloaderService	extends android.app.Service {
         retrieveProxySettings();
 	}
 	
-	public static HttpURLConnection getConnectionWithProxy(URL url)
-			throws IOException {
-		if(proxyEnabled)
-		{
-			Proxy p = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
-					InetAddress.getByName(proxyHost), proxyPort));
-			return (HttpURLConnection) url.openConnection(p);
-		} else
-			return (HttpURLConnection) url.openConnection();
-	}
-
 	private void retrieveProxySettings() {
 		proxyEnabled = data.proxyEnabled;
 		proxyHost = data.proxyHost;
 		proxyPort = data.proxyPort;
 	}
+
+    /**
+     * Class for clients to access.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with
+     * IPC.
+     */
+    public class LocalBinder extends Binder {
+        public MediaDownloaderService getService() {
+            return MediaDownloaderService.this;
+        }
+    }
 
 }

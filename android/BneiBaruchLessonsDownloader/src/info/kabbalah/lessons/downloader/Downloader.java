@@ -1,11 +1,5 @@
 package info.kabbalah.lessons.downloader;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -31,41 +25,27 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class Downloader extends Activity
 	implements OnSharedPreferenceChangeListener {
-	
-	public class MediaScannerClient implements MediaScannerConnectionClient {
 
-		private final Downloader instance;
-
-		public MediaScannerClient(Downloader downloader) {
-			instance = downloader;
-		}
-
-		public void onMediaScannerConnected() {
-			instance.onMediaScannerConnected();
-		}
-
-		public void onScanCompleted(String path, Uri uri) {
-			instance.onScanCompleted(path, uri);
-		}
-
-	}
-
+	private final Map<String, FileProcessor> nameIndex = new HashMap<>();
+	private final DownloaderPreferenceData data = new DownloaderPreferenceData();
 	private MediaDownloaderService mBoundService;
-
 	private Handler mHandler = null;
 	private boolean mIsBound = false;
 	private boolean bMediaScannerReady = false;
 	private FileProcessorArrayAdapter processedFiles = null;
-	private final Map<String, FileProcessor> nameIndex = new HashMap<>();
     private Uri todayPlaylist = null;
 	private MediaScannerConnection mediaScannerConnection;
-	private final DownloaderPreferenceData data = new DownloaderPreferenceData();
-
 	private final ServiceConnection mConnection = new ServiceConnection() {
 	    public void onServiceConnected(ComponentName className, IBinder service) {
 	        // This is called when the connection with the service has been
@@ -76,11 +56,11 @@ public class Downloader extends Activity
 	        mBoundService = ((MediaDownloaderService.LocalBinder)service).getService();
 	        mBoundService.setDownloader(Downloader.this);
 //	        mBoundService.setFileList(processedFiles.getList());
-	        
+
 	        // Tell the user about this for our demo.
 	        //Toast.makeText(Downloader.this, R.string.local_service_connected,
 	        //        Toast.LENGTH_SHORT).show();
-	        
+
 	        showToday();
 	    }
 
@@ -101,8 +81,8 @@ public class Downloader extends Activity
 	    // class name because we want a specific service implementation that
 	    // we know will be running in our own process (and thus won't be
 	    // supporting component replacement by other applications).
-	    bindService(new Intent(Downloader.this, 
-	    		MediaDownloaderService.class), mConnection, Context.BIND_AUTO_CREATE);
+		bindService(new Intent(Downloader.this,
+				MediaDownloaderService.class), mConnection, Context.BIND_AUTO_CREATE);
 	    mIsBound = true;
 	}
 
@@ -113,7 +93,7 @@ public class Downloader extends Activity
 		fileInfo.setUri(uri);
 
 		createPlaylistForTodayFiles();
-		
+
 		mHandler.post( new Runnable() {
 
 			public void run() {
@@ -150,7 +130,7 @@ public class Downloader extends Activity
 	    super.onDestroy();
 	    doUnbindService();
 		mediaScannerConnection.disconnect();
-    	PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);     
+		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
@@ -169,13 +149,13 @@ public class Downloader extends Activity
     {
     	super.onPause();
     }
-    
+
     protected void onResume()
     {
     	super.onResume();
     }
 
-    protected void onStop()
+	protected void onStop()
     {
     	super.onStop();
     }
@@ -196,7 +176,7 @@ public class Downloader extends Activity
         getPreferencesData().readPreferences(this);
 
         ListView fileList = (ListView) findViewById(R.id.fileListId);
-        
+
         fileList.setOnItemClickListener(new OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> listView,
@@ -213,17 +193,17 @@ public class Downloader extends Activity
                 startActivity(intentToPlayMedia);
             }
         });
-        
+
         mHandler = new Handler();
 		mediaScannerConnection = new MediaScannerConnection(this, new MediaScannerClient(this));
 		mediaScannerConnection.connect();
 
         doBindService();
-        
+
         BootSetScheduleReceiver.renewAlarm(this);
-        
-        ArrayList<FileProcessor> files = /*null;
-        
+
+		ArrayList<FileProcessor> files = /*null;
+
         if(savedInstanceState != null)
         {
         	try {
@@ -233,14 +213,14 @@ public class Downloader extends Activity
 
         if(files == null)
     		files =*/ new ArrayList<>();
-    	
-		processedFiles = new FileProcessorArrayAdapter(Downloader.this, 
+
+		processedFiles = new FileProcessorArrayAdapter(Downloader.this,
 				R.id.fileListId, files);
 
 		if(fileList != null)
         	fileList.setAdapter(this.processedFiles);
-        
-    }
+
+	}
 
     public void onPlayNowClick(View v)
     {
@@ -279,7 +259,7 @@ public class Downloader extends Activity
 	    inflater.inflate(R.menu.menu, menu);
 	    return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
@@ -347,7 +327,7 @@ public class Downloader extends Activity
 	public void downloadComplete(final FileInfo fileInfo) {
 		rescanMedia(fileInfo);
 	}
-	
+
 	Uri createPlaylist(String name)
 	{
         ContentResolver resolver = getContentResolver();
@@ -366,10 +346,10 @@ public class Downloader extends Activity
 
 	private int idForplaylist(String name) {
         Cursor c = MusicUtils.query(this, MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                new String[] { MediaStore.Audio.Playlists._ID },
-                MediaStore.Audio.Playlists.NAME + "=?",
-                new String[] { name },
-                MediaStore.Audio.Playlists.NAME);
+				new String[]{MediaStore.Audio.Playlists._ID},
+				MediaStore.Audio.Playlists.NAME + "=?",
+				new String[]{name},
+				MediaStore.Audio.Playlists.NAME);
         int id = -1;
         if (c != null) {
             c.moveToFirst();
@@ -385,12 +365,6 @@ public class Downloader extends Activity
 		return createTodayPlaylist() && createPlaylistForPastNDay(0);
 	}
 
-// --Commented out by Inspection START (26/03/2015 14:00):
-//	public boolean createPlaylistForYesterdayFiles() {
-//		return createPlaylistForPastNDay(1);
-//	}
-// --Commented out by Inspection STOP (26/03/2015 14:00)
-
 	synchronized boolean createPlaylistForPastNDay(int N) {
 		String folderPath = getFolderPath(Calendar.getInstance(), -N);
 		String like = "%" + folderPath + "%lesson%";
@@ -399,13 +373,19 @@ public class Downloader extends Activity
 		{
 			String playlistName = FileSystemUtilities.folderName + "_" + folderPath;
 			this.todayPlaylist = createPlaylist(playlistName);
-			int plId = idForplaylist(playlistName);			
+			int plId = idForplaylist(playlistName);
 			MusicUtils.addToPlaylist(this, songs, plId);
 			return true;
 		} else {
 			return false;
 		}
 	}
+
+// --Commented out by Inspection START (26/03/2015 14:00):
+//	public boolean createPlaylistForYesterdayFiles() {
+//		return createPlaylistForPastNDay(1);
+//	}
+// --Commented out by Inspection STOP (26/03/2015 14:00)
 
 	synchronized boolean createTodayPlaylist() {
 		String folderPath = getFolderPath(Calendar.getInstance(), 0);
@@ -415,7 +395,7 @@ public class Downloader extends Activity
 		{
 			String playlistName = "TodayMorningLessons";
 			createPlaylist(playlistName);
-			int plId = idForplaylist(playlistName);			
+			int plId = idForplaylist(playlistName);
 			MusicUtils.addToPlaylist(this, songs, plId);
 			return true;
 		} else {
@@ -445,6 +425,24 @@ public class Downloader extends Activity
 
 	DownloaderPreferenceData getPreferencesData() {
 		return data;
+	}
+
+	public class MediaScannerClient implements MediaScannerConnectionClient {
+
+		private final Downloader instance;
+
+		public MediaScannerClient(Downloader downloader) {
+			instance = downloader;
+		}
+
+		public void onMediaScannerConnected() {
+			instance.onMediaScannerConnected();
+		}
+
+		public void onScanCompleted(String path, Uri uri) {
+			instance.onScanCompleted(path, uri);
+		}
+
 	}
 
 }

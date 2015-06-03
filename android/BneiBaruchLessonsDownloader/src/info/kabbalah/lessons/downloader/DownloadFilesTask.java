@@ -1,14 +1,14 @@
 package info.kabbalah.lessons.downloader;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 class DownloadFilesTask extends AsyncTask<FileProcessor, Integer, Long> {
-	private boolean failed = false;
 	private final MediaDownloaderService mediaDownloaderService;
+	private boolean failed = false;
 	private int contentLength;
 	private String fileName;
 	

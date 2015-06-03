@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="info.kabbalah.lessons.downloader" android:versionCode="30"
-	android:versionName="1.7.22" android:installLocation="auto">
+	package="info.kabbalah.lessons.downloader"
+	android:installLocation="auto"
+	android:versionCode="31"
+	android:versionName="1.7.23">
 	<uses-sdk android:minSdkVersion="16" android:targetSdkVersion="24"/>
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.INTERNET" />
@@ -11,21 +13,31 @@
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="android.permission.VIBRATE"/>
 
-	<application android:icon="@drawable/icon" android:label="@string/app_name"
-		android:name="info.kabbalah.lessons.downloader.DownloaderApp" android:allowBackup="true">
+	<application
+		android:name="info.kabbalah.lessons.downloader.DownloaderApp"
+		android:allowBackup="true"
+		android:icon="@drawable/icon"
+		android:label="@string/app_name">
 		<activity android:name=".Downloader" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:label="@string/app_name" android:name=".DownloaderPreferences" android:exported="false">
+		<activity
+			android:name=".DownloaderPreferences"
+			android:exported="false"
+			android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.PREFERENCE" />
 			</intent-filter>
 		</activity>
-		<service android:name=".MediaDownloaderService" android:label="@string/app_name" android:exported="false">
+
+		<service
+			android:name=".MediaDownloaderService"
+			android:exported="false"
+			android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="info.kabbalah.lessons.downloader.CheckFiles" />
 				<action android:name="info.kabbalah.lessons.downloader.Network.WiFi.On" />
@@ -33,7 +45,10 @@
 				<category android:name="android.intent.category.HOME" />
 			</intent-filter>
 		</service>
-		<receiver android:name=".BootSetScheduleReceiver" android:exported="true" android:enabled="true">
+		<receiver
+			android:name=".BootSetScheduleReceiver"
+			android:enabled="true"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>

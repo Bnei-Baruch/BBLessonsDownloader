@@ -1,9 +1,5 @@
 package info.kabbalah.lessons.downloader;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,8 +8,31 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 class MusicUtils {
     private final static long [] sEmptyList = new long[0];
+    private static ContentValues[] sContentValuesCache = null;
+
+// --Commented out by Inspection START (26/03/2015 14:01):
+//    public static long [] getSongListForArtist(Context context, long id) {
+//        final String[] ccols = new String[] { MediaStore.Audio.Media._ID };
+//        String where = MediaStore.Audio.Media.ARTIST_ID + "=" + id + " AND " +
+//        MediaStore.Audio.Media.IS_MUSIC + "=1";
+//        Cursor cursor = query(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+//                ccols, where, null,
+//                MediaStore.Audio.Media.ALBUM_KEY + ","  + MediaStore.Audio.Media.TRACK);
+//
+//        if (cursor != null) {
+//            long [] list = getSongListForCursor(cursor);
+//            cursor.close();
+//            return list;
+//        }
+//        return sEmptyList;
+//    }
+// --Commented out by Inspection STOP (26/03/2015 14:01)
 
     private static long [] getSongListForCursor(Cursor cursor) {
         if (cursor == null) {
@@ -35,32 +54,14 @@ class MusicUtils {
         return list;
     }
 
-// --Commented out by Inspection START (26/03/2015 14:01):
-//    public static long [] getSongListForArtist(Context context, long id) {
-//        final String[] ccols = new String[] { MediaStore.Audio.Media._ID };
-//        String where = MediaStore.Audio.Media.ARTIST_ID + "=" + id + " AND " +
-//        MediaStore.Audio.Media.IS_MUSIC + "=1";
-//        Cursor cursor = query(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-//                ccols, where, null,
-//                MediaStore.Audio.Media.ALBUM_KEY + ","  + MediaStore.Audio.Media.TRACK);
-//
-//        if (cursor != null) {
-//            long [] list = getSongListForCursor(cursor);
-//            cursor.close();
-//            return list;
-//        }
-//        return sEmptyList;
-//    }
-// --Commented out by Inspection STOP (26/03/2015 14:01)
-
     public static long [] getSongIdLikeName(Context context, String name) {
         final String[] ccols = new String[] { MediaStore.Audio.Media._ID };
-        String where = MediaStore.Audio.Media.DISPLAY_NAME + " LIKE ? AND " + 
+        String where = MediaStore.Audio.Media.DISPLAY_NAME + " LIKE ? AND " +
         MediaStore.Audio.Media.IS_MUSIC + "=1";
         Cursor cursor = query(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 ccols, where, new String[] {name},
                 MediaStore.Audio.Media.ALBUM_KEY + ","  + MediaStore.Audio.Media.TRACK);
-        
+
         if (cursor != null) {
             long [] list = getSongListForCursor(cursor);
             cursor.close();
@@ -68,8 +69,6 @@ class MusicUtils {
         }
         return sEmptyList;
     }
-	
-    private static ContentValues[] sContentValuesCache = null;
 
     /**
      * @param ids The source array containing all the ids to be added to the playlist
