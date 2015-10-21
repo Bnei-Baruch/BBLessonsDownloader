@@ -1,9 +1,9 @@
 package info.kabbalah.lessons.downloader;
 
 
-import java.io.File;
-
 import android.os.Environment;
+
+import java.io.File;
 
 class FileSystemUtilities {
 
@@ -22,7 +22,7 @@ class FileSystemUtilities {
 
 	public static String getDefaultLocalPath() {
 		String localFSPath = null;
-		localFSPath = getLocalPath();
+		localFSPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
 		return localFSPath + File.separator + getMediaSubFolder();
 	}
 

@@ -1,9 +1,5 @@
 package info.kabbalah.lessons.downloader;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,6 +7,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 class MusicUtils {
     private final static long [] sEmptyList = new long[0];
@@ -112,12 +112,14 @@ class MusicUtils {
             };
             Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
             Cursor cur = resolver.query(uri, cols, null, null, null);
-            cur.moveToFirst();
-            int base = cur.getInt(0);
-            cur.close();
-            for (int i = 0; i < size; i += 1000) {
-                makeInsertItems(ids, i, 1000, base);
-                resolver.bulkInsert(uri, sContentValuesCache);
+            if(cur != null) {
+                cur.moveToFirst();
+                int base = cur.getInt(0);
+                cur.close();
+                for (int i = 0; i < size; i += 1000) {
+                    makeInsertItems(ids, i, 1000, base);
+                    resolver.bulkInsert(uri, sContentValuesCache);
+                }
             }
         }
     }
@@ -145,13 +147,13 @@ class MusicUtils {
 			{
 				String name = c.getString(1);
 				int id = c.getInt(0);
-				Log.d("cleanOldPlaylists", String.format("ID - %d, Name - %s", new Object[] {id, name}));
+				Log.d("cleanOldPlaylists", String.format("ID - %d, Name - %s", id, name));
 				String[] d = name.split("_")[1].split("-");
 				GregorianCalendar pld = new GregorianCalendar(Integer.parseInt(d[0]), Integer.parseInt(d[1]) - 1, Integer.parseInt(d[2]));
 				pld.setTime(new Date(Integer.parseInt(d[0]) - 1900, Integer.parseInt(d[1]) - 1, Integer.parseInt(d[2])));
 				if(pld.before(date))
 				{
-					Log.d("cleanOldPlaylists", String.format("To delete - %s", new Object[] {name}));
+					Log.d("cleanOldPlaylists", String.format("To delete - %s", name));
 					if(!first)
 						listToDelete += ", ";
 					else
@@ -168,7 +170,7 @@ class MusicUtils {
 			Integer num = resolver.delete(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
 			        MediaStore.Audio.Playlists._ID + " IN (" + listToDelete + ")",
 			        null);
-			Log.d("cleanOldPlaylists", String.format("Removed %d playlists", new Object[] {num}));
+			Log.d("cleanOldPlaylists", String.format("Removed %d playlists", (int) num));
 		}
 	}
 
