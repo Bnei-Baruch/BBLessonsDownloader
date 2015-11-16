@@ -23,6 +23,7 @@
 	<string name="show_today_condensed">Today</string>
 	<!-- string name="don_t_download_high_quality_audio">"Don't download high quality audio"</string>
 	<string name="download_high_quality_audio">Download high quality audio</string-->
+	<string name="permission_storage_rationale">The downloader application need storage to download files !!!</string>
 	<string name="don_t_download_low_quality_audio">"Don't download audio"</string>
 	<string name="download_low_quality_audio">Download audio</string>
 	<string name="morninglessons">MorningLessons</string>
@@ -47,4 +48,5 @@
 	<string name="file_mp3">file mp3</string>
 	<string name="bb_tree">BB Tree</string>
 	<string name="donate">Donate</string>
+	<string name="ok">OK</string>
 </resources>

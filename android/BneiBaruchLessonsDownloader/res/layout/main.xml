@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
+	android:id="@+id/MainView"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
 
 		<Button
 		    android:id="@+id/Donate"
@@ -11,22 +13,29 @@
 		    android:text="@string/donate" />
 
     	<RelativeLayout android:id="@+id/LinearLayout1"
-		android:orientation="horizontal" android:layout_width="match_parent"
-		android:layout_height="wrap_content">
-		<Button android:layout_alignParentLeft="true"
-			android:layout_alignParentTop="true" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="@string/check_now"
-			android:id="@+id/btnCheckNow" android:onClick="onCheckNowClick" />
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/btnCheckNow"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentLeft="true"
+				android:layout_alignParentTop="true"
+				android:onClick="onCheckNowClick"
+				android:text="@string/check_now" />
 		<!-- Button android:layout_width="match_parent" android:layout_height="wrap_content" 
 			android:text="@string/play_now" android:id="@+id/btnPlayNow" android:onClick="onPlayNowClick" 
 			android:enabled="false" android:visible="false"/ -->
-		<Button android:text="@string/check_yesterday" 
-			android:onClick="onCheckYesterdayClick" 
-			android:layout_width="wrap_content" 
-			android:id="@+id/btnCheckYesterday" 
-			android:layout_height="wrap_content" 
-			android:layout_alignParentTop="true" 
-			android:layout_alignParentRight="true"/>
+			<Button
+				android:id="@+id/btnCheckYesterday"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentRight="true"
+				android:layout_alignParentTop="true"
+				android:onClick="onCheckYesterdayClick"
+				android:text="@string/check_yesterday" />
 
 	</RelativeLayout>
 

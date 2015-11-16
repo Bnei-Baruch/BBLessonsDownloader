@@ -1,6 +1,6 @@
 package info.kabbalah.lessons.downloader;
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
@@ -19,6 +20,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,8 +38,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class Downloader extends Activity
-	implements OnSharedPreferenceChangeListener {
+public class Downloader extends AppCompatActivity
+		implements OnSharedPreferenceChangeListener,
+		ActivityCompat.OnRequestPermissionsResultCallback {
 
 	private final Map<String, FileProcessor> nameIndex = new HashMap<>();
 	private final DownloaderPreferenceData data = new DownloaderPreferenceData();
@@ -47,14 +52,15 @@ public class Downloader extends Activity
     private Uri todayPlaylist = null;
 	private MediaScannerConnection mediaScannerConnection;
 	private final ServiceConnection mConnection = new ServiceConnection() {
-	    public void onServiceConnected(ComponentName className, IBinder service) {
-	        // This is called when the connection with the service has been
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// This is called when the connection with the service has been
 	        // established, giving us the service object we can use to
 	        // interact with the service.  Because we have bound to a explicit
 	        // service that we know is running in our own process, we can
 	        // cast its IBinder to a concrete class and directly access it.
 	        mBoundService = ((MediaDownloaderService.LocalBinder)service).getService();
-	        mBoundService.setDownloader(Downloader.this);
+			if (mBoundService == null) return;
+			mBoundService.setDownloader(Downloader.this);
 //	        mBoundService.setFileList(processedFiles.getList());
 
 	        // Tell the user about this for our demo.
@@ -83,7 +89,7 @@ public class Downloader extends Activity
 	    // supporting component replacement by other applications).
 		bindService(new Intent(Downloader.this,
 				MediaDownloaderService.class), mConnection, Context.BIND_AUTO_CREATE);
-	    mIsBound = true;
+		mIsBound = true;
 	}
 
 	void onScanCompleted(String path, Uri uri) {
@@ -233,13 +239,37 @@ public class Downloader extends Activity
         	}
     	} catch (Exception e) {
 			Log.e("onPlayNowClick", "Cannot play playlist.", e);
-		}
     }
+	}
+
+	private void checkAndRequestPermissions() {
+		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+				PackageManager.PERMISSION_GRANTED) {
+			if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+				Snackbar.make(findViewById(R.id.MainView), R.string.permission_storage_rationale,
+						Snackbar.LENGTH_INDEFINITE)
+						.setAction(R.string.ok, new View.OnClickListener() {
+							@Override
+							public void onClick(View view) {
+								ActivityCompat.requestPermissions(Downloader.this,
+										new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+										123);
+							}
+						})
+						.show();
+			} else {
+				ActivityCompat.requestPermissions(Downloader.this,
+						new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+						123);
+			}
+		}
+	}
 
     public void onCheckNowClick(View v)
     {
-        if(mBoundService != null)
-    	    mBoundService.checkNow();
+		checkAndRequestPermissions();
+		if (mBoundService != null)
+			mBoundService.checkNow();
     }
 
     public void onDonateClick(View v)
@@ -250,8 +280,9 @@ public class Downloader extends Activity
 
     public void onCheckYesterdayClick(View v)
     {
-    	mBoundService.checkYesterday();
-    }
+		checkAndRequestPermissions();
+		mBoundService.checkYesterday();
+	}
 
     public boolean onCreateOptionsMenu (Menu menu)
 	{
@@ -287,6 +318,7 @@ public class Downloader extends Activity
 	}
 
 	private void showToday() {
+		checkAndRequestPermissions();
 		String folder = getFolderPath(Calendar.getInstance(), 0);
 
 		processedFiles.clear();
@@ -301,6 +333,7 @@ public class Downloader extends Activity
 	}
 
 	private void showYesterday() {
+		checkAndRequestPermissions();
 		String folder = getFolderPath(Calendar.getInstance(), -1);
 
 		processedFiles.clear();

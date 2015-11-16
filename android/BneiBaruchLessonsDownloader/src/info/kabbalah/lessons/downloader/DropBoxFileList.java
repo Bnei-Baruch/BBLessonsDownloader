@@ -3,7 +3,6 @@ package info.kabbalah.lessons.downloader;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +26,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
+
+//import org.apache.http.util.ByteArrayBuffer;
 
 class DropBoxFileList {
 	private final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
@@ -156,15 +157,15 @@ class DropBoxFileList {
 			/*
 			 * Read bytes to the Buffer until there is nothing more to read(-1).
 			 */
-	
-			ByteArrayBuffer baf = new ByteArrayBuffer(5000);
+
+			java.nio.ByteBuffer baf = java.nio.ByteBuffer.allocate(5000);
 			int current = 0;
 			byte buf[] = new byte[1024];
 			while ((current = bis.read(buf)) != -1) {
-				baf.append(buf, 0, current);
+				baf.put(buf);
 			}
-	
-			return baf.toByteArray();
+
+			return baf.array();
 		} finally {
 			bis.close();
 			is.close();
