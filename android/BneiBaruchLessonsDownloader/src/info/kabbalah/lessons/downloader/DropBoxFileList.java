@@ -58,9 +58,9 @@ class DropBoxFileList {
 						today.get(Calendar.MONTH) + 1,
 						today.get(Calendar.DAY_OF_MONTH));
 		String sUrl = String.format(uri, title, caller.data.selectedLanguage.toUpperCase(Locale.US));
-		URL url = null;
-		try {
-			url = new URL(sUrl);
+        URL url;
+        try {
+            url = new URL(sUrl);
 			final File storagePublicDirectory = new File(FileSystemUtilities.getLocalPath());
 			if( ! storagePublicDirectory.exists())
 				storagePublicDirectory.mkdir();
@@ -97,9 +97,9 @@ class DropBoxFileList {
 							return null;
 						}
 						long lastModified = ucon.getLastModified();
-						byte[] content = null;
-						if(lastModified != 0 && lastModified > localFileList.lastModified()
-								|| lastModified == 0)
+                        byte[] content;
+                        if (lastModified != 0 && lastModified > localFileList.lastModified()
+                                || lastModified == 0)
 						{
 							content = readToString(is);
 							if(content.length <= 0 && ! localFileList.exists())
@@ -124,9 +124,8 @@ class DropBoxFileList {
 							try {
 								file.read(buffer);
 							} finally {
-								if(file != null)
-									file.close();
-							}
+                                file.close();
+                            }
 							return new String(buffer);
 						}
 					} catch (Exception e) {
@@ -157,18 +156,25 @@ class DropBoxFileList {
 			/*
 			 * Read bytes to the Buffer until there is nothing more to read(-1).
 			 */
+            byte buf[] = new byte[1024];
+            byte result[] = null;
+            int current;
+            int total = 0;
+            int pos;
+            while ((current = bis.read(buf)) != -1) {
+                pos = total;
+                total += current;
+                byte[] save = result;
+                result = new byte[total];
+                if (save != null)
+                    System.arraycopy(save, 0, result, 0, save.length);
+                System.arraycopy(buf, 0, result, pos, current);
+            }
 
-			java.nio.ByteBuffer baf = java.nio.ByteBuffer.allocate(5000);
-			int current = 0;
-			byte buf[] = new byte[1024];
-			while ((current = bis.read(buf)) != -1) {
-				baf.put(buf);
-			}
-
-			return baf.array();
-		} finally {
-			bis.close();
-			is.close();
+            return result;
+        } finally {
+            bis.close();
+            is.close();
 		}
 	}
 
