@@ -21,15 +21,18 @@ public class DownloaderPreferenceData {
 
 	public void readPreferences(Context downloader) {
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(downloader);
-		readPreferencesFrom(pref);
+		readPreferencesFrom(downloader, pref);
 	}
 
-	private void readPreferencesFrom(SharedPreferences pref) {
+	private void readPreferencesFrom(Context downloader, SharedPreferences pref) {
 		FileSystemUtilities.resumeDownloads = pref.getBoolean("resume_failed_downloads", false);
 		FileSystemUtilities.folderName = pref.getString("local_folder_name", FileSystemUtilities.folderName);
 		checkSchedule = Integer.parseInt(pref.getString("dl_check_schedule", "0"));
 		checkWithCellular = pref.getBoolean("check_with_cellular", false);
-		selectedLanguage = pref.getString("language", "heb");
+		selectedLanguage = pref.getString("language", "he");
+		/*if(downloader != null && selectedLanguage.length() > 2) {
+            selectedLanguage = findLanguage(downloader, selectedLanguage);
+        }*/
 		bMp3Low = pref.getBoolean("mp3_low", true);
 		bMp3High = false; //pref.getBoolean("mp3_high", false);
 		bMp4 = pref.getBoolean("mp4", false);
@@ -39,7 +42,21 @@ public class DownloaderPreferenceData {
 		proxyPort = Integer.parseInt(pref.getString("proxy_port_number", "80"));
 	}
 
-	public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
-		readPreferencesFrom(pref);
+    private String findLanguage(Context downloader, String selectedLanguage) {
+		String[] lang_codes = downloader.getResources().getStringArray(R.array.lang_codes);
+		String[] lang_codes_two = downloader.getResources().getStringArray(R.array.lang_codes_two);
+		int i = 0;
+		for(String l : lang_codes) {
+		    if(l.equalsIgnoreCase(selectedLanguage))
+            {
+                return lang_codes_two[i];
+            }
+            i++;
+        }
+        return null;
+    }
+
+    public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
+		readPreferencesFrom(null, pref);
 	}
 }

@@ -48,6 +48,30 @@
         <item>slv</item>
         <item>ukr</item>
 	</string-array>
+	<string-array name="lang_codes_two">
+		<item>he</item>
+		<item>en</item>
+		<item>ru</item>
+		<item>sp</item>
+		<item>ge</item>
+		<item>it</item>
+		<item>fr</item>
+		<item>tr</item>
+		<item>se</item>
+		<item>bu</item>
+		<item>du</item>
+		<item>hr</item>
+		<item>hu</item>
+		<item>la</item>
+		<item>li</item>
+		<item>mk</item>
+		<item>no</item>
+		<item>pl</item>
+		<item>po</item>
+		<item>ro</item>
+		<item>sl</item>
+		<item>uk</item>
+	</string-array>
 	<string-array name="remove_files_names">
 		<item>Never</item>
 		<item>Every Two Days</item>

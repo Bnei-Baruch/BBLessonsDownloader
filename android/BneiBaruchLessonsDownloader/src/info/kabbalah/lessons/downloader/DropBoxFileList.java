@@ -1,6 +1,7 @@
 package info.kabbalah.lessons.downloader;
 
 import android.os.AsyncTask;
+import android.util.JsonReader;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -27,10 +28,15 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.HttpsURLConnection;
+
 //import org.apache.http.util.ByteArrayBuffer;
 
 class DropBoxFileList {
-	private final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
+    // TODO: set https://archive.kbb1.com/backend/content_units?page_no=1&page_size=10&content_type=LESSON_PART&language=en
+	private final static String uri = "https://old.kabbalahmedia.info/morning_lesson/%2$s";
+//	private final static String uri = "https://kabbalahmedia.info/backend/content_units?page_no=1&page_size=10&content_type=LESSON_PART&language=%2$s&start=%1$s&end=%1$s";
+//    private final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
 	//final static String uri = "http://dl.dropbox.com/u/3074981/%s.txt";
 	private static List<FileInfo> fileList = null;
 	private static MediaDownloaderService caller;
@@ -42,8 +48,9 @@ class DropBoxFileList {
 	}
 	
 	private synchronized static void pushFileList(String fileListJson, String dateFilter) {
-		try {	
-			caller.pushFileList(parseFileListJson(fileListJson, dateFilter));
+		try {
+            caller.pushFileList(parseFileListJson(fileListJson, dateFilter));
+            //caller.pushFileList(parseFileListJsonFromArchive(fileListJson, dateFilter));
 		} catch (Exception e) {
 			Log.d("DropBoxFileListDownloader", e.toString());
 		}
@@ -78,7 +85,7 @@ class DropBoxFileList {
 			protected String doInBackground(URL... params) {
 				/* Open a connection to that URL. */
 				try {
-					HttpURLConnection ucon = MediaDownloaderService.getConnectionWithProxy(url);
+					HttpsURLConnection ucon = (HttpsURLConnection)MediaDownloaderService.getConnectionWithProxy(url);
 					try {
 						if(localFileList.exists() && localFileList.canRead())
 						{
@@ -86,6 +93,7 @@ class DropBoxFileList {
 						}
 						
 						ucon.setChunkedStreamingMode(4096);
+						ucon.setRequestProperty("Accept", "application/json");
 				
 						/*
 						 * Define InputStreams to read from the URLConnection.
@@ -178,13 +186,33 @@ class DropBoxFileList {
 		}
 	}
 
-    private static List<FileInfo> parseFileListJson(String flieListJson, String dateFilter) throws JSONException {
-        JSONObject json= new JSONObject(flieListJson);
+	private static List<FileInfo> parseFileListJsonFromArchive(String fileListJson, String dateFilter) throws JSONException {
+		JSONObject json= new JSONObject(fileListJson);
+		fileList = new ArrayList<FileInfo>();
+		if(json.has("content_units")) {
+			JSONArray jlist= json.getJSONArray("content_units");
+
+			for(int i= 0; i < jlist.length(); i++) {
+				JSONObject cunit = jlist.getJSONObject(i);
+				String cudate = cunit.getString("film_date");
+				if(dateFilter.equalsIgnoreCase(cudate)) {
+				    String cuid = cunit.getString("id");
+                    if(cuid != null) {
+                        //downloadContentUnits();
+                    }
+				}
+			}
+		}
+		return fileList;
+	}
+
+    private static List<FileInfo> parseFileListJson(String fileListJson, String dateFilter) throws JSONException {
+        JSONObject json= new JSONObject(fileListJson);
         fileList = new ArrayList<FileInfo>();
         if(json.has("morning_lessons")) {
-            JSONArray jlist= json.getJSONArray("morning_lessons");
-            for(int i= 0; i < jlist.length(); i++) {
-                JSONArray jdates= jlist.getJSONObject(i).getJSONArray("dates");
+            JSONObject jlist= json.getJSONObject("morning_lessons");
+            if(jlist.has("dates")) {
+                JSONArray jdates = jlist.getJSONArray("dates");
                 for(int j= 0; j < jdates.length(); j++) {
                     JSONObject jdate = jdates.getJSONObject(j);
                     String date=jdate.getString("date");

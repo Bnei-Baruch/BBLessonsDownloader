@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 
 class DownloadFilesTask extends AsyncTask<FileProcessor, Integer, Long> {
 	private final MediaDownloaderService mediaDownloaderService;
@@ -28,7 +29,7 @@ class DownloadFilesTask extends AsyncTask<FileProcessor, Integer, Long> {
         for (int i = 0; i < count; i++) {
             FileInfo fileInfo = finfos[i].getFileInfo();
 			try {
-        		HttpURLConnection connection = MediaDownloaderService
+        		HttpURLConnection connection = (HttpURLConnection) MediaDownloaderService
         								.getConnectionWithProxy(new URL(fileInfo.getUrl()));
 				contentLength = connection.getContentLength();
         		if(contentLength > 0)
