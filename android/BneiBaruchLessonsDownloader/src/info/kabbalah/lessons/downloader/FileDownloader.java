@@ -52,7 +52,7 @@ class FileDownloader extends FileSystemUtilities {
 	long getFileFromURL(String url, String localPath, long downloadedSize) throws
             IOException {
 		/* Open a connection to that URL. */
-		HttpURLConnection inp = MediaDownloaderService.getConnectionWithProxy(new URL(url));
+		HttpURLConnection inp = (HttpURLConnection)MediaDownloaderService.getConnectionWithProxy(new URL(url));
 		
 		inp.setChunkedStreamingMode(4096);
 		

@@ -52,6 +52,6 @@ namespace BBDailyLessonsDownloader
     public class MylibJSONLessonlist
     {
         [DataMember(Name = "morning_lessons")]
-        public LessonListForLang[] morning_lessons { get; set; }
+        public LessonListForLang morning_lessons { get; set; }
     }
 }

@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.net.URLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -55,14 +55,14 @@ public class MediaDownloaderService	extends android.app.Service {
     private WakeLock powerlock;
     private boolean bWifiConnected;
 
-    public static HttpURLConnection getConnectionWithProxy(URL url)
+    public static URLConnection getConnectionWithProxy(URL url)
             throws IOException {
         if (proxyEnabled) {
             Proxy p = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
                     InetAddress.getByName(proxyHost), proxyPort));
-            return (HttpURLConnection) url.openConnection(p);
+            return url.openConnection(p);
         } else
-            return (HttpURLConnection) url.openConnection();
+            return url.openConnection();
     }
 
     @Override

@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
@@ -233,9 +234,13 @@ public class Downloader extends AppCompatActivity
    	try {
         	if(todayPlaylist != null)
         	{
-        		Intent intentToPlayMedia = new Intent(Intent.ACTION_DEFAULT);
-                intentToPlayMedia.setDataAndType(todayPlaylist, MediaStore.Audio.Playlists.CONTENT_TYPE);
-                startActivity(intentToPlayMedia);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setComponent(new ComponentName ("com.android.music","com.android.music.PlaylistBrowserActivity"));
+                intent.setType(MediaStore.Audio.Playlists.CONTENT_TYPE);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("oneshot", false);
+                intent.putExtra("playlist", todayPlaylist);
+                startActivity(intent);
         	}
     	} catch (Exception e) {
 			Log.e("onPlayNowClick", "Cannot play playlist.", e);
