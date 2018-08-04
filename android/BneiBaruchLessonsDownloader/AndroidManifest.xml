@@ -1,64 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="info.kabbalah.lessons.downloader"
-	android:installLocation="auto"
-	android:versionCode="138"
-	android:versionName="1.8.5">
+    package="info.kabbalah.lessons.downloader"
+    android:installLocation="auto"
+    android:versionCode="139"
+    android:versionName="1.8.6">
 
-	<uses-sdk
-		android:minSdkVersion="16"
-		android:targetSdkVersion="27" />
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
-	<uses-permission android:name="android.permission.VIBRATE"/>
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="27" />
 
-	<application
-		android:name="info.kabbalah.lessons.downloader.DownloaderApp"
-		android:allowBackup="true"
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:name="info.kabbalah.lessons.downloader.DownloaderApp"
+        android:allowBackup="true"
         android:fullBackupContent="true"
-		android:icon="@drawable/icon"
-		android:label="@string/app_name"
-		android:theme="@style/Theme.AppCompat.Light">
-		<activity android:name=".Downloader" android:label="@string/app_name">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
-		<activity
-			android:name=".DownloaderPreferences"
-			android:exported="false"
-			android:label="@string/app_name">
-			<intent-filter>
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AppCompat.Light">
+        <activity
+            android:name=".Downloader"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.PREFERENCE" />
-			</intent-filter>
-		</activity>
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="kabbalahmedia.info"
+                    android:path="/lessons"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".DownloaderPreferences"
+            android:exported="false"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.PREFERENCE" />
+            </intent-filter>
+        </activity>
 
         <service
-			android:name=".MediaDownloaderService"
-			android:exported="false"
-			android:label="@string/app_name">
-			<intent-filter>
-				<action android:name="info.kabbalah.lessons.downloader.CheckFiles" />
-				<action android:name="info.kabbalah.lessons.downloader.Network.WiFi.On" />
-				<action android:name="info.kabbalah.lessons.downloader.Network.WiFi.Off" />
-				<category android:name="android.intent.category.HOME" />
-			</intent-filter>
-		</service>
-		<receiver
-			android:name=".BootSetScheduleReceiver"
-			android:enabled="true"
-			android:exported="true">
-			<intent-filter>
-				<action android:name="android.intent.action.BOOT_COMPLETED" />
-			</intent-filter>
-		</receiver>
+            android:name=".MediaDownloaderService"
+            android:exported="false"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="info.kabbalah.lessons.downloader.CheckFiles" />
+                <action android:name="info.kabbalah.lessons.downloader.Network.WiFi.On" />
+                <action android:name="info.kabbalah.lessons.downloader.Network.WiFi.Off" />
+
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </service>
+        <receiver
+            android:name=".BootSetScheduleReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
         <provider
             android:name=".GenericFileProvider"
             android:authorities="${applicationId}.info.kabbalah.lessons.downloader"
@@ -68,5 +83,5 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-	</application>
+    </application>
 </manifest>
