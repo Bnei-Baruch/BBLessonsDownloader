@@ -21,11 +21,11 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -70,12 +70,16 @@ public class MediaDownloaderService	extends android.app.Service {
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
         data.readPreferences(this);
-        
-        WifiManager wifimanager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        wifilock = wifimanager.createWifiLock(WifiManager.WIFI_MODE_FULL, "LessonDownloader");
-        
+
+        WifiManager wifimanager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wifimanager != null) {
+            wifilock = wifimanager.createWifiLock(WifiManager.WIFI_MODE_FULL, "LessonDownloader");
+        }
+
         PowerManager powermanager = (PowerManager) getSystemService(POWER_SERVICE);
-        powerlock = powermanager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "LessonDownloader");
+        if (powermanager != null) {
+            powerlock = powermanager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "LessonDownloader");
+        }
     }
 
     @Override
@@ -331,7 +335,7 @@ public class MediaDownloaderService	extends android.app.Service {
 								+ Environment.getExternalStorageDirectory())));
 			}
 		} else {
-			Log.w("deleteFilesOlderThan..", "Files were not deleted, directory " + dirWay + " does'nt exist!");
+            Log.w("deleteFilesOlderThan..", "Files were not deleted, directory " + dirWay + " doesn't exist!");
 			if(! directory.mkdirs())
                 Log.e("deleteFilesOlderThan...", "Cannot create directory: " + directory);
 		}

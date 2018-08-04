@@ -12,7 +12,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
@@ -109,7 +108,7 @@ public class Downloader extends AppCompatActivity
 					for(int index = 0; index < processedFiles.getCount(); ++index)
 					{
 						FileProcessor item = processedFiles.getItem(index);
-						if(item.getLocalPath().compareTo(fileInfo.getLocalPath()) == 0)
+                        if (item != null && item.getLocalPath().compareTo(fileInfo.getLocalPath()) == 0)
 							processedFiles.remove(item);
 					}
 				}
@@ -234,13 +233,23 @@ public class Downloader extends AppCompatActivity
    	try {
         	if(todayPlaylist != null)
         	{
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setComponent(new ComponentName ("com.android.music","com.android.music.PlaylistBrowserActivity"));
-                intent.setType(MediaStore.Audio.Playlists.CONTENT_TYPE);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("oneshot", false);
-                intent.putExtra("playlist", todayPlaylist);
-                startActivity(intent);
+                // com.google.android.music/.playback.MusicPlaybackService
+                //intent.setComponent(new ComponentName ("com.google.android.music",".playback.MusicPlaybackService"));
+                //shuffleListBeforeQueueing=false, device=any, clearQueueBeforeQueueing=false, position=0, songlist=AlbumSongList: [1586322595, 2018-07-02, Michael Laitman, true]
+//                intent.putExtra("shuffleListBeforeQueueing", false);
+//                intent.putExtra("songlist", todayPlaylist);
+                if (android.os.Build.VERSION.SDK_INT >= 15) {
+                    Intent intent = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN,
+                            Intent.CATEGORY_APP_MUSIC);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//Min SDK 15
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent("android.intent.action.MUSIC_PLAYER");//Min SDK 8
+                    intent.setType(MediaStore.Audio.Playlists.CONTENT_TYPE);
+                    intent.putExtra("oneshot", false);
+                    intent.putExtra("playlist", todayPlaylist);
+                    startActivity(intent);
+                }
         	}
     	} catch (Exception e) {
 			Log.e("onPlayNowClick", "Cannot play playlist.", e);
@@ -279,7 +288,7 @@ public class Downloader extends AppCompatActivity
 
     public void onDonateClick(View v)
     {
-    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kabbalah.info/donations/"));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kabbalah.info/maaser"));
     	startActivity(browserIntent);
     }
 
