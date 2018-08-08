@@ -223,8 +223,7 @@ public class Downloader extends AppCompatActivity
 		processedFiles = new FileProcessorArrayAdapter(Downloader.this,
 				R.id.fileListId, files);
 
-		if(fileList != null)
-        	fileList.setAdapter(this.processedFiles);
+        fileList.setAdapter(this.processedFiles);
 
 	}
 
@@ -238,18 +237,19 @@ public class Downloader extends AppCompatActivity
                 //shuffleListBeforeQueueing=false, device=any, clearQueueBeforeQueueing=false, position=0, songlist=AlbumSongList: [1586322595, 2018-07-02, Michael Laitman, true]
 //                intent.putExtra("shuffleListBeforeQueueing", false);
 //                intent.putExtra("songlist", todayPlaylist);
-                if (android.os.Build.VERSION.SDK_INT >= 15) {
-                    Intent intent = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN,
+//                if (android.os.Build.VERSION.SDK_INT >= 15) {
+                Intent intent = Intent.makeMainSelectorActivity(Intent.ACTION_VIEW,
                             Intent.CATEGORY_APP_MUSIC);
+                intent.setData(todayPlaylist);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//Min SDK 15
                     startActivity(intent);
-                } else {
+/*                } else {
                     Intent intent = new Intent("android.intent.action.MUSIC_PLAYER");//Min SDK 8
                     intent.setType(MediaStore.Audio.Playlists.CONTENT_TYPE);
                     intent.putExtra("oneshot", false);
                     intent.putExtra("playlist", todayPlaylist);
                     startActivity(intent);
-                }
+                }*/
         	}
     	} catch (Exception e) {
 			Log.e("onPlayNowClick", "Cannot play playlist.", e);
@@ -286,9 +286,9 @@ public class Downloader extends AppCompatActivity
 			mBoundService.checkNow();
     }
 
-    public void onDonateClick(View v)
+    public void onHomeClick(View v)
     {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kabbalah.info/maaser"));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kabbalahmedia.info"));
     	startActivity(browserIntent);
     }
 

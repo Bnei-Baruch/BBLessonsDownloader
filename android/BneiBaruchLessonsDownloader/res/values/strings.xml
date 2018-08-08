@@ -47,6 +47,6 @@
 	<string name="use_http_proxy">Use Http Proxy</string>
 	<string name="file_mp3">file mp3</string>
 	<string name="bb_tree">BB Tree</string>
-	<string name="donate">Donate</string>
+	<string name="home">Media Archive Home</string>
 	<string name="ok">OK</string>
 </resources>

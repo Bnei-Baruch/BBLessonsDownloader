@@ -6,11 +6,11 @@
 	android:orientation="vertical">
 
 		<Button
-		    android:id="@+id/Donate"
+			android:id="@+id/Home"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:onClick="onDonateClick"
-		    android:text="@string/donate" />
+			android:onClick="onHomeClick"
+			android:text="@string/home" />
 
     	<RelativeLayout android:id="@+id/LinearLayout1"
 			android:layout_width="match_parent"
