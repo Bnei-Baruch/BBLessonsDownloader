@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="info.kabbalah.lessons.downloader"
     android:installLocation="auto"
-    android:versionCode="140"
-    android:versionName="1.8.7">
+    android:versionCode="141"
+    android:versionName="1.8.8">
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -76,7 +76,7 @@
         </receiver>
         <provider
             android:name=".GenericFileProvider"
-            android:authorities="${applicationId}.info.kabbalah.lessons.downloader"
+            android:authorities="${applicationId}.GenericFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

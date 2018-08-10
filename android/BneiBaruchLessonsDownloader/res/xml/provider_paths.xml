@@ -2,5 +2,5 @@
 <paths>
     <external-path
         name="external_files"
-        path="." />
+        path="Download/MorningLessons" />
 </paths>

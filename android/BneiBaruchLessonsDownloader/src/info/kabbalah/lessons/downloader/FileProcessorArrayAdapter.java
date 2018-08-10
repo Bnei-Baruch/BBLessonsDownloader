@@ -29,7 +29,8 @@ class FileProcessorArrayAdapter extends ArrayAdapter<FileProcessor> {
        if (o != null) {
                TextView tt = (TextView) v.findViewById(R.id.fileLabel);
                if (tt != null) {
-                     tt.setText(o.getFileInfo().getName());                            
+                   tt.setText(o.getFileInfo().getName());
+                   tt.setTag(o.getFileInfo());
                }
        }
        return v;

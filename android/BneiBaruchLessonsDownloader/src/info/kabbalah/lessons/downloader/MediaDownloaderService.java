@@ -1,11 +1,12 @@
 package info.kabbalah.lessons.downloader;
 
-import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,7 +39,7 @@ public class MediaDownloaderService	extends android.app.Service {
 	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES = "info.kabbalah.lessons.downloader.CheckFiles";
 	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON = "info.kabbalah.lessons.downloader.Network.WiFi.On";
 	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF = "info.kabbalah.lessons.downloader.Network.WiFi.Off";
-	private static boolean proxyEnabled;
+    public static final String CHANNEL_ID = "info.kabbalah.lessons.downloaer.channel";
 	private static String proxyHost;
 	private static int proxyPort;
     public final DownloaderPreferenceData data = new DownloaderPreferenceData();
@@ -54,6 +56,7 @@ public class MediaDownloaderService	extends android.app.Service {
     private int PLAY_NOTIFICATION_ID = string.local_service_started + 123;
     private WakeLock powerlock;
     private boolean bWifiConnected;
+    private static boolean proxyEnabled;
 
     public static URLConnection getConnectionWithProxy(URL url)
             throws IOException {
@@ -68,6 +71,22 @@ public class MediaDownloaderService	extends android.app.Service {
     @Override
     public void onCreate() {
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            CharSequence name = "files.channel";
+            String Description = "This is files channel";
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.RED);
+            mChannel.enableVibration(true);
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mChannel.setShowBadge(false);
+            mChannel.setBypassDnd(false);
+            mChannel.setLockscreenVisibility(0);
+            mNM.createNotificationChannel(mChannel);
+        }
 
         data.readPreferences(this);
 
@@ -138,7 +157,7 @@ public class MediaDownloaderService	extends android.app.Service {
         CharSequence text = getText(intentToPlayVideo == null ? string.file_failed : string.file_downloaded);
 
         mNM.notify(PLAY_NOTIFICATION_ID++,
-                new Notification.Builder(this)
+                new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.nicon)
                         .setAutoCancel(true)
                         .setContentIntent(PendingIntent.getActivity(this, 0, intentToPlayVideo, 0))
@@ -165,7 +184,7 @@ public class MediaDownloaderService	extends android.app.Service {
 	private void sendDownloadNotification(int max, int cur, boolean indeterminate, String fileName) {
 		CharSequence text = getText(string.local_service_started);
 
-        mNM.notify(string.DownloadingFile, new Notification.Builder(this)
+        mNM.notify(string.DownloadingFile, new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.nicon)
                 .setAutoCancel(true)
                 .setOngoing(true)

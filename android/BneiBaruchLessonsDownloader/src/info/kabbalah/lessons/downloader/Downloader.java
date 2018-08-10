@@ -31,7 +31,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -230,27 +232,19 @@ public class Downloader extends AppCompatActivity
     public void onPlayNowClick(View v)
     {
    	try {
-        	if(todayPlaylist != null)
+        if (todayPlaylist != null)
         	{
-                // com.google.android.music/.playback.MusicPlaybackService
-                //intent.setComponent(new ComponentName ("com.google.android.music",".playback.MusicPlaybackService"));
-                //shuffleListBeforeQueueing=false, device=any, clearQueueBeforeQueueing=false, position=0, songlist=AlbumSongList: [1586322595, 2018-07-02, Michael Laitman, true]
-//                intent.putExtra("shuffleListBeforeQueueing", false);
-//                intent.putExtra("songlist", todayPlaylist);
-//                if (android.os.Build.VERSION.SDK_INT >= 15) {
-                Intent intent = Intent.makeMainSelectorActivity(Intent.ACTION_VIEW,
-                            Intent.CATEGORY_APP_MUSIC);
-                intent.setData(todayPlaylist);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//Min SDK 15
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                String localPath = ((FileInfo) ((TextView) v).getTag()).getLocalPath();
+                Uri uriForFile = GenericFileProvider.getUriForFile(v.getContext(),
+                        v.getContext().getApplicationContext().getPackageName() + ".GenericFileProvider",
+                        new File(localPath));
+                intent.setDataAndType(uriForFile, localPath.endsWith(".mp3") ? "audio/*" : "video/*");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivity(intent);
-/*                } else {
-                    Intent intent = new Intent("android.intent.action.MUSIC_PLAYER");//Min SDK 8
-                    intent.setType(MediaStore.Audio.Playlists.CONTENT_TYPE);
-                    intent.putExtra("oneshot", false);
-                    intent.putExtra("playlist", todayPlaylist);
-                    startActivity(intent);
-                }*/
-        	}
+
+            }
     	} catch (Exception e) {
 			Log.e("onPlayNowClick", "Cannot play playlist.", e);
     }
