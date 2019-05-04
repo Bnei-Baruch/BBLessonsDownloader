@@ -30,7 +30,8 @@ import java.util.regex.Pattern;
 //import org.apache.http.util.ByteArrayBuffer;
 
 class DropBoxFileList {
-	private final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
+    private final static String uri = "http://www.kabbalahmedia.info/morning_lesson/%2$s";
+    //private final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
 	//final static String uri = "http://dl.dropbox.com/u/3074981/%s.txt";
 	private static List<FileInfo> fileList = null;
 	private static MediaDownloaderService caller;
@@ -45,7 +46,7 @@ class DropBoxFileList {
 		try {	
 			caller.pushFileList(parseFileListJson(fileListJson, dateFilter));
 		} catch (Exception e) {
-			Log.d("DropBoxFileListDownloader", e.toString());
+            Log.d("DropBoxFLDownloader", e.toString());
 		}
 	}
 
@@ -182,18 +183,24 @@ class DropBoxFileList {
         JSONObject json= new JSONObject(flieListJson);
         fileList = new ArrayList<FileInfo>();
         if(json.has("morning_lessons")) {
-            JSONArray jlist= json.getJSONArray("morning_lessons");
-            for(int i= 0; i < jlist.length(); i++) {
-                JSONArray jdates= jlist.getJSONObject(i).getJSONArray("dates");
-                for(int j= 0; j < jdates.length(); j++) {
-                    JSONObject jdate = jdates.getJSONObject(j);
-                    String date=jdate.getString("date");
-                    if(!date.equals(dateFilter)) continue;
-                    JSONArray jfiles= jdate.getJSONArray("files");
-                    for(int k= 0; k < jfiles.length(); k++) {
-                        fileList.add(new FileInfo(date, jfiles.getJSONObject(k)));
+            try {
+                JSONObject jlist = json.getJSONObject("morning_lessons");
+                for (int i = 0; i < jlist.length(); i++) {
+                    if (jlist.has("dates")) {
+                        JSONArray jdates = jlist.getJSONArray("dates");
+                        for (int j = 0; j < jdates.length(); j++) {
+                            JSONObject jdate = jdates.getJSONObject(j);
+                            String date = jdate.getString("date");
+                            if (!date.equals(dateFilter)) continue;
+                            JSONArray jfiles = jdate.getJSONArray("files");
+                            for (int k = 0; k < jfiles.length(); k++) {
+                                fileList.add(new FileInfo(date, jfiles.getJSONObject(k)));
+                            }
+                        }
                     }
                 }
+            } catch (JSONException je) {
+                Log.d("DropBoxFileList", "Cannot parse file list" + je.getMessage(), je);
             }
         }
         return fileList;
