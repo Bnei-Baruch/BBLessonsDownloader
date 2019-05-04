@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<ListPreference android:title="@string/language"
-		android:key="language" android:entries="@array/lang_names"
-		android:entryValues="@array/lang_codes" android:dialogTitle="@string/language"
-		android:defaultValue="heb" />
+    <ListPreference
+        android:defaultValue="heb"
+        android:dialogTitle="@string/language"
+        android:entries="@array/lang_names"
+        android:entryValues="@array/lang_codes"
+        android:key="language"
+        android:title="@string/language" />
 	<CheckBoxPreference android:title="@string/download_mp3"
 		android:key="mp3_low" android:defaultValue="true"
 		android:summaryOn="@string/download_low_quality_audio"

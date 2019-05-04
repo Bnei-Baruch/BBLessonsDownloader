@@ -239,7 +239,7 @@ namespace BBLessonsDwnldApp
                         _installerProcess.Exited += new EventHandler(InstallerEnded);
 
                     }
-                    catch (Exception e)
+                    catch (Exception )
                     {
                         return;
                     }
@@ -977,6 +977,11 @@ namespace BBLessonsDwnldApp
         //    return null;
         //}
 
+        public bool AcceptAllCertifications(object sender, System.Security.Cryptography.X509Certificates.X509Certificate certification, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
+        }
+
         private string[] GetFilesListFromJSON(bool removable)
         {
             StringBuilder result = new StringBuilder();
@@ -990,9 +995,17 @@ namespace BBLessonsDwnldApp
             }
             try
             {
-                string requestUrl = fileToread + "?lang=" + langShort; // get lessons list for selected language
+                string requestUrl = fileToread + "/" + langShort; // get lessons list for selected language
                 //System.Windows.Forms.MessageBox.Show(requestUrl);
+                //ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(AcceptAllCertifications);
                 HttpWebRequest request = WebRequest.Create(requestUrl) as HttpWebRequest;
+                request.Accept = "applivcation/json";
+                request.AllowAutoRedirect = true;
+                request.KeepAlive = false;
+                request.Method = "GET";
+
+                ServicePointManager.UseNagleAlgorithm = false;
+ 
                 HttpWebResponse response = request.GetResponse() as HttpWebResponse;
                 if (response.StatusCode != HttpStatusCode.OK)
                     throw new Exception(String.Format(
@@ -1014,21 +1027,21 @@ namespace BBLessonsDwnldApp
                 todayDate += DateTime.Now.Month + "-";
                 if (DateTime.Now.Day < 10) todayDate += "0";
                 todayDate += DateTime.Now.Day;
-                for (int i = 0; i < lessonList.morning_lessons.Length; i++)
-                {
-                    if (lessonList.morning_lessons[i].lang.ToLower() == langShort.ToLower())
-                    {
-                        for (int j = 0; j < lessonList.morning_lessons[i].dates.Length; j++)
+ //               for (int i = 0; i < lessonList.morning_lessons.Length; i++)
+ //               {
+ //                   if (lessonList.morning_lessons[i].lang.ToLower() == langShort.ToLower())
+ //                   {
+                        for (int j = 0; j < lessonList.morning_lessons.dates.Length; j++)
                         {
                             if (dateToday == "")
                             {
-                                dateToday = lessonList.morning_lessons[i].dates[j].date;
+                                dateToday = lessonList.morning_lessons.dates[j].date;
                             }
                             else
                             {
-                                if (lessonList.morning_lessons[i].dates[j].date != dateToday)
+                                if (lessonList.morning_lessons.dates[j].date != dateToday)
                                 {
-                                    dateYesterday = lessonList.morning_lessons[i].dates[j].date;
+                                    dateYesterday = lessonList.morning_lessons.dates[j].date;
                                     string[] date1 = dateYesterday.Split('-');
                                     string[] date2 = dateToday.Split('-');
                                     DateTime dtY = new DateTime(Convert.ToInt32(date1[0]), Convert.ToInt32(date1[1]), Convert.ToInt32(date1[2]));
@@ -1044,9 +1057,9 @@ namespace BBLessonsDwnldApp
                             }
 
                         }
-                        break;
-                    }
-                }
+ //                      break;
+ //                   }
+ //               }
                 string sDate;
                 if (m_downloadTodayLessons)
                 {
@@ -1063,19 +1076,19 @@ namespace BBLessonsDwnldApp
                 //todayDate += DateTime.Now.Month + "-";
                 //if (DateTime.Now.Day < 10) todayDate += "0";
                 //todayDate += DateTime.Now.Day;
-                for (int i = 0; i < lessonList.morning_lessons.Length; i++)
-                {
-                    if (lessonList.morning_lessons[i].lang.ToLower() == langShort.ToLower())
-                    {
-                        for (int j = 0; j < lessonList.morning_lessons[i].dates.Length; j++)
+//                for (int i = 0; i < lessonList.morning_lessons.Length; i++)
+//                {
+//                    if (lessonList.morning_lessons.lang.ToLower() == langShort.ToLower())
+//                    {
+                        for (int j = 0; j < lessonList.morning_lessons.dates.Length; j++)
                         {
-                            if (lessonList.morning_lessons[i].dates[j].date == sDate)
+                            if (lessonList.morning_lessons.dates[j].date == sDate)
                             {
                                 // add lessons for selected date (today or yesterday)
-                                for (int k = 0; k < lessonList.morning_lessons[i].dates[j].files.Length; k++)
+                                for (int k = 0; k < lessonList.morning_lessons.dates[j].files.Length; k++)
                                 {
                                     bool bAdd = false;
-                                    string fileType = lessonList.morning_lessons[i].dates[j].files[k].type.ToLower();
+                                    string fileType = lessonList.morning_lessons.dates[j].files[k].type.ToLower();
                                     if (clientProps.Audiomp3 && fileType == "mp3")
                                     {
                                         bAdd = true;
@@ -1090,13 +1103,13 @@ namespace BBLessonsDwnldApp
                                     }
                                 }
                             }
-                            if (lessonList.morning_lessons[i].dates[j].date == todayDate)
+                            if (lessonList.morning_lessons.dates[j].date == todayDate)
                             {
                                 // add lessons for today date
-                                for (int k = 0; k < lessonList.morning_lessons[i].dates[j].files.Length; k++)
+                                for (int k = 0; k < lessonList.morning_lessons.dates[j].files.Length; k++)
                                 {
                                     bool bAdd = false;
-                                    string fileType = lessonList.morning_lessons[i].dates[j].files[k].type.ToLower();
+                                    string fileType = lessonList.morning_lessons.dates[j].files[k].type.ToLower();
                                     if (clientProps.Audiomp3 && fileType == "mp3")
                                     {
                                         bAdd = true;
@@ -1111,14 +1124,14 @@ namespace BBLessonsDwnldApp
                                     }
                                     if (bAdd)
                                     {
-                                        result.Append(lessonList.morning_lessons[i].dates[j].files[k].url + "\n");
+                                        result.Append(lessonList.morning_lessons.dates[j].files[k].url + "\n");
                                     }
                                 }
                             }
                         }
-                        break;
-                    }
-                }
+//                        break;
+//                    }
+//                }
             }
             catch (Exception e)
             {

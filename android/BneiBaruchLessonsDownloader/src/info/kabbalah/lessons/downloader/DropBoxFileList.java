@@ -15,7 +15,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,11 +26,15 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.HttpsURLConnection;
+
 //import org.apache.http.util.ByteArrayBuffer;
 
 class DropBoxFileList {
-    private final static String uri = "http://www.kabbalahmedia.info/morning_lesson/%2$s";
-    //private final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
+    // TODO: set https://archive.kbb1.com/backend/content_units?page_no=1&page_size=10&content_type=LESSON_PART&language=en
+    private final static String uri = "https://www.kabbalahmedia.info/morning_lesson/%2$s";
+    //	private final static String uri = "https://kabbalahmedia.info/backend/content_units?page_no=1&page_size=10&content_type=LESSON_PART&language=%2$s&start=%1$s&end=%1$s";
+//    private final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
 	//final static String uri = "http://dl.dropbox.com/u/3074981/%s.txt";
 	private static List<FileInfo> fileList = null;
 	private static MediaDownloaderService caller;
@@ -43,8 +46,9 @@ class DropBoxFileList {
 	}
 	
 	private synchronized static void pushFileList(String fileListJson, String dateFilter) {
-		try {	
-			caller.pushFileList(parseFileListJson(fileListJson, dateFilter));
+        try {
+            caller.pushFileList(parseFileListJson(fileListJson, dateFilter));
+            //caller.pushFileList(parseFileListJsonFromArchive(fileListJson, dateFilter));
 		} catch (Exception e) {
             Log.d("DropBoxFLDownloader", e.toString());
 		}
@@ -79,7 +83,7 @@ class DropBoxFileList {
 			protected String doInBackground(URL... params) {
 				/* Open a connection to that URL. */
 				try {
-					HttpURLConnection ucon = MediaDownloaderService.getConnectionWithProxy(url);
+                    HttpsURLConnection ucon = (HttpsURLConnection) MediaDownloaderService.getConnectionWithProxy(url);
 					try {
 						if(localFileList.exists() && localFileList.canRead())
 						{
@@ -87,7 +91,8 @@ class DropBoxFileList {
 						}
 						
 						ucon.setChunkedStreamingMode(4096);
-				
+                        ucon.setRequestProperty("Accept", "application/json");
+
 						/*
 						 * Define InputStreams to read from the URLConnection.
 						 */
@@ -179,10 +184,29 @@ class DropBoxFileList {
 		}
 	}
 
-    private static List<FileInfo> parseFileListJson(String flieListJson, String dateFilter) throws JSONException {
-        JSONObject json= new JSONObject(flieListJson);
+    private static List<FileInfo> parseFileListJsonFromArchive(String fileListJson, String dateFilter) throws JSONException {
+        JSONObject json = new JSONObject(fileListJson);
         fileList = new ArrayList<FileInfo>();
-        if(json.has("morning_lessons")) {
+        if (json.has("content_units")) {
+            JSONArray jlist = json.getJSONArray("content_units");
+
+            for (int i = 0; i < jlist.length(); i++) {
+                JSONObject cunit = jlist.getJSONObject(i);
+                String cudate = cunit.getString("film_date");
+                if (dateFilter.equalsIgnoreCase(cudate)) {
+                    String cuid = cunit.getString("id");
+                    if (cuid != null) {
+                        //downloadContentUnits();
+                    }
+                }
+            }
+        }
+        return fileList;
+    }
+
+    private static List<FileInfo> parseFileListJson(String fileListJson, String dateFilter) throws JSONException {
+        JSONObject json = new JSONObject(fileListJson);
+        fileList = new ArrayList<FileInfo>();
             try {
                 JSONObject jlist = json.getJSONObject("morning_lessons");
                 for (int i = 0; i < jlist.length(); i++) {
@@ -202,52 +226,47 @@ class DropBoxFileList {
             } catch (JSONException je) {
                 Log.d("DropBoxFileList", "Cannot parse file list" + je.getMessage(), je);
             }
-        }
         return fileList;
     }
 
-	public static void deleteFileListsOlderThanNDays(int nRemoveFiles) {
-		final Calendar date = Calendar.getInstance();
-		final Pattern datepattern = Pattern.compile("\\d{4}\\-\\d{2}\\-\\d{2}.{3}.txt"); 
-		date.add(Calendar.DAY_OF_YEAR, -nRemoveFiles);
+    public static void deleteFileListsOlderThanNDays(int nRemoveFiles) {
+        final Calendar date = Calendar.getInstance();
+        final Pattern datepattern = Pattern.compile("\\d{4}\\-\\d{2}\\-\\d{2}.{3}.txt");
+        date.add(Calendar.DAY_OF_YEAR, -nRemoveFiles);
 
-		final File dir = new File(FileSystemUtilities.getLocalPath());
-		
-		if(dir != null)
-		{
-			dir.mkdirs();
-			
-			final File[] toDelete = dir.listFiles(new FilenameFilter() {
-				
-				public boolean accept(File dir, String filename) {
-					if(datepattern.matcher(filename).matches())
-					{
-						try {
-							String year = filename.substring(0, 4);
-							String month = filename.substring(4, 6);
-							String day = filename.substring(6, 8);
-							int iYear = Integer.parseInt(year);
-							int iMonth = Integer.parseInt(month) - 1;
-							int iDay = Integer.parseInt(day);
-							Calendar cal = new GregorianCalendar();
-							cal.setTime(new Date(iYear - 1900, iMonth, iDay));
-							
-							return date.before(cal);
-						} catch (Exception e)
-						{
-							return false;
-						}
-					} else
-						return false;
-				}
-			});
-			if(toDelete != null)
-				for(final File f : toDelete)
-				{
-					if(f.exists())
-						f.delete();
-				}
-		}
-	}
+        final File dir = new File(FileSystemUtilities.getLocalPath());
+
+        if (dir != null) {
+            dir.mkdirs();
+
+            final File[] toDelete = dir.listFiles(new FilenameFilter() {
+
+                public boolean accept(File dir, String filename) {
+                    if (datepattern.matcher(filename).matches()) {
+                        try {
+                            String year = filename.substring(0, 4);
+                            String month = filename.substring(4, 6);
+                            String day = filename.substring(6, 8);
+                            int iYear = Integer.parseInt(year);
+                            int iMonth = Integer.parseInt(month) - 1;
+                            int iDay = Integer.parseInt(day);
+                            Calendar cal = new GregorianCalendar();
+                            cal.setTime(new Date(iYear - 1900, iMonth, iDay));
+
+                            return date.before(cal);
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    } else
+                        return false;
+                }
+            });
+            if (toDelete != null)
+                for (final File f : toDelete) {
+                    if (f.exists())
+                        f.delete();
+                }
+        }
+    }
 
 }
