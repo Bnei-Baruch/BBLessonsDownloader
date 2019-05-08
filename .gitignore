@@ -1,4 +1,4 @@
-*/.DS_Store
+**/.DS_Store
 */*.user
 */*.exe*
 **/bin/*
@@ -19,7 +19,7 @@
 *.msi
 *.xap
 *.suo
-*/.gradle
+**/.gradle
 */.idea
 .DS_Store
 */.DS_Store
