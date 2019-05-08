@@ -30,10 +30,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.legacy.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -232,20 +234,14 @@ public class Downloader extends AppCompatActivity
 
     public void onPlayNowClick(View v)
     {
-   	try {
-        	if(todayPlaylist != null)
-        	{
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setComponent(new ComponentName("com.android.music", "com.android.music.PlaylistBrowserActivity"));
-                intent.setType(MediaStore.Audio.Playlists.CONTENT_TYPE);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("oneshot", false);
-                intent.putExtra("playlist", todayPlaylist);
-                startActivity(intent);
-        	}
-    	} catch (Exception e) {
-			Log.e("onPlayNowClick", "Cannot play playlist.", e);
-    }
+		FileInfo fi = processedFiles.getFileInfo(v);
+		Intent intentToPlayVideo = new Intent(Intent.ACTION_DEFAULT);
+		intentToPlayVideo.setDataAndType(
+				FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", new File(fi.getLocalPath())),
+				fi.getLocalPath().contains(".mp3") ? "audio/*" : "video/*");
+
+		intentToPlayVideo.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		startActivity(intentToPlayVideo);
 	}
 
 	private void checkAndRequestPermissions() {

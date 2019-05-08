@@ -32,29 +32,30 @@ import javax.net.ssl.HttpsURLConnection;
 
 class DropBoxFileList {
     // TODO: set https://archive.kbb1.com/backend/content_units?page_no=1&page_size=10&content_type=LESSON_PART&language=en
-    private final static String uri = "https://www.kabbalahmedia.info/morning_lesson/%2$s";
-    //	private final static String uri = "https://kabbalahmedia.info/backend/content_units?page_no=1&page_size=10&content_type=LESSON_PART&language=%2$s&start=%1$s&end=%1$s";
+    //  private final static String uri = "https://www.kabbalahmedia.info/morning_lesson/%2$s";
+//    private final static String uri = "https://kabbalahmedia.info/backend/content_units?page_no=1&page_size=10&content_type=LESSON_PART&language=%2$s&start=%1$s&end=%1$s";
+    private final static String uri = "https://kabbalahmedia.info/feeds/morning_lesson?DLANG=%3$s&DF=%2$s&DAYS=%1$d";
 //    private final static String uri = "http://mylibrary.kbb1.com/api/morning_lessons.json?lang=%2$s";
 	//final static String uri = "http://dl.dropbox.com/u/3074981/%s.txt";
 	private static List<FileInfo> fileList = null;
 	private static MediaDownloaderService caller;
 
-	public static void startDownLoadFileList(int offset, MediaDownloaderService mediaDownloaderService) {
+    public static void startDownLoadFileList(int offset, String fileFormat, MediaDownloaderService mediaDownloaderService) {
 
 		caller = mediaDownloaderService;
-		startDownloadFileList(offset);
+        startDownloadFileList(offset, fileFormat);
 	}
 	
 	private synchronized static void pushFileList(String fileListJson, String dateFilter) {
         try {
-            caller.pushFileList(parseFileListJson(fileListJson, dateFilter));
-            //caller.pushFileList(parseFileListJsonFromArchive(fileListJson, dateFilter));
+            //caller.pushFileList(parseFileListJson(fileListJson, dateFilter));
+            caller.pushFileList(parseFileListJsonFromArchive(fileListJson, dateFilter));
 		} catch (Exception e) {
             Log.d("DropBoxFLDownloader", e.toString());
 		}
 	}
 
-	private static void startDownloadFileList(int offset) {
+    private static void startDownloadFileList(int offset, String fileFormat) {
 		Calendar today = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tel_Aviv"));
 		today.add(Calendar.DAY_OF_MONTH, offset);
 
@@ -62,7 +63,7 @@ class DropBoxFileList {
 				.format(Locale.US, "%04d-%02d-%02d", today.get(Calendar.YEAR),
 						today.get(Calendar.MONTH) + 1,
 						today.get(Calendar.DAY_OF_MONTH));
-		String sUrl = String.format(uri, title, caller.data.selectedLanguage.toUpperCase(Locale.US));
+        String sUrl = String.format(uri, offset == -1 ? 1 : 0, fileFormat, caller.data.selectedLanguage.toUpperCase(Locale.US));
         URL url;
         try {
             url = new URL(sUrl);
@@ -104,8 +105,7 @@ class DropBoxFileList {
 						}
 						long lastModified = ucon.getLastModified();
                         byte[] content;
-                        if (lastModified != 0 && lastModified > localFileList.lastModified()
-                                || lastModified == 0)
+                        if (lastModified == 0 || lastModified > localFileList.lastModified())
 						{
 							content = readToString(is);
 							if(content.length <= 0 && ! localFileList.exists())
@@ -185,19 +185,15 @@ class DropBoxFileList {
 	}
 
     private static List<FileInfo> parseFileListJsonFromArchive(String fileListJson, String dateFilter) throws JSONException {
-        JSONObject json = new JSONObject(fileListJson);
         fileList = new ArrayList<FileInfo>();
-        if (json.has("content_units")) {
-            JSONArray jlist = json.getJSONArray("content_units");
+        JSONArray jlist = new JSONArray(fileListJson);
 
-            for (int i = 0; i < jlist.length(); i++) {
-                JSONObject cunit = jlist.getJSONObject(i);
-                String cudate = cunit.getString("film_date");
-                if (dateFilter.equalsIgnoreCase(cudate)) {
-                    String cuid = cunit.getString("id");
-                    if (cuid != null) {
-                        //downloadContentUnits();
-                    }
+        for (int i = 0; i < jlist.length(); i++) {
+            JSONObject cunit = jlist.getJSONObject(i);
+            if (cunit.has("Files")) {
+                JSONArray flist = cunit.getJSONArray("Files");
+                for (int j = 0; j < flist.length(); ++j) {
+                    fileList.add(new FileInfo(dateFilter, flist.getJSONObject(j)));
                 }
             }
         }
