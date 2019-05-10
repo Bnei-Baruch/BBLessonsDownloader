@@ -21,7 +21,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -78,7 +77,7 @@ public class MediaDownloaderService	extends android.app.Service {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			CharSequence name = getString(R.string.channel_name);
 			String description = getString(R.string.channel_description);
-			NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManagerCompat.IMPORTANCE_DEFAULT);
+			NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
 			channel.setDescription(description);
 			// Register the channel with the system; you can't change the importance
 			// or other notification behaviors after this
