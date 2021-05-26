@@ -40,11 +40,11 @@ private long lastModified;
 
     public FileInfo(String _date, JSONObject file) throws JSONException {
         date= _date;
-        name= file.getString("name");
-        url= file.getString("url");
-        fileSize= file.getLong("size");
+		name = file.getString("Name");
+		url = file.getString("Url");
+		fileSize = file.getLong("Size");
         Time mtime= new Time();
-        mtime.parse3339(file.getString("updated").replace(' ', 'T').substring(0, 19)+"Z");
+		mtime.parse3339(file.getString("Created").replace(' ', 'T').substring(0, 19) + "Z");
         lastModified= mtime.toMillis(false);
     }
 
@@ -87,6 +87,7 @@ private long lastModified;
 //		this.url = url;
 //	}
 // --Commented out by Inspection STOP (26/03/2015 14:00)
+
 
 	public String getDate() {
 		return date;

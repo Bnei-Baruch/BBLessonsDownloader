@@ -8,15 +8,19 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 class FileProcessorArrayAdapter extends ArrayAdapter<FileProcessor> {
 
 	private final ArrayList<FileProcessor> items;
+	private Map<TextView, FileInfo> view2file;
 	
 	public FileProcessorArrayAdapter(Context context, int textViewResourceId, ArrayList<FileProcessor> arrayList) {
 		super(context, textViewResourceId, arrayList);
 		
 		this.items = arrayList;
+		view2file = new HashMap<TextView, FileInfo>();
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -27,12 +31,17 @@ class FileProcessorArrayAdapter extends ArrayAdapter<FileProcessor> {
        }
        FileProcessor o = this.items.get(position);
        if (o != null) {
-               TextView tt = (TextView) v.findViewById(R.id.fileLabel);
-               if (tt != null) {
-                     tt.setText(o.getFileInfo().getName());                            
-               }
+		   TextView tt = v.findViewById(R.id.fileLabel);
+		   if (tt != null) {
+			   tt.setText(o.getFileInfo().getName());
+			   view2file.put(tt, o.getFileInfo());
+		   }
        }
        return v;
+	}
+
+	public FileInfo getFileInfo(View v) {
+		return view2file.get(v);
 	}
 
 	public boolean isEnabled(int position) {

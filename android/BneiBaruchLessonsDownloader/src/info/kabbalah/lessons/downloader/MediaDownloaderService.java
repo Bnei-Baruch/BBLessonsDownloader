@@ -1,6 +1,6 @@
 package info.kabbalah.lessons.downloader;
 
-import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -19,21 +20,24 @@ import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
+
 import java.io.File;
 import java.io.IOException;
-import java.net.URLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import info.kabbalah.lessons.downloader.R.string;
 
-
 public class MediaDownloaderService	extends android.app.Service {
+	public static final String CHANNEL_ID = "195818847";
 	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_CHECK_FILES = "info.kabbalah.lessons.downloader.CheckFiles";
 	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_ON = "info.kabbalah.lessons.downloader.Network.WiFi.On";
 	public static final String INFO_KABBALAH_LESSONS_DOWNLOADER_WIFI_OFF = "info.kabbalah.lessons.downloader.Network.WiFi.Off";
@@ -54,28 +58,60 @@ public class MediaDownloaderService	extends android.app.Service {
     private int PLAY_NOTIFICATION_ID = string.local_service_started + 123;
     private WakeLock powerlock;
     private boolean bWifiConnected;
+	private NotificationCompat.Builder ncbProgress;
+	private NotificationCompat.Builder ncbDone;
 
-    public static URLConnection getConnectionWithProxy(URL url)
+	public static URLConnection getConnectionWithProxy(URL url)
             throws IOException {
         if (proxyEnabled) {
             Proxy p = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
                     InetAddress.getByName(proxyHost), proxyPort));
-            return url.openConnection(p);
+			return url.openConnection(p);
         } else
-            return url.openConnection();
+			return url.openConnection();
     }
+
+	private String createNotificationChannel() {
+		// Create the NotificationChannel, but only on API 26+ because
+		// the NotificationChannel class is new and not in the support library
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			CharSequence name = getString(R.string.channel_name);
+			String description = getString(R.string.channel_description);
+			NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
+			channel.setDescription(description);
+			// Register the channel with the system; you can't change the importance
+			// or other notification behaviors after this
+			mNM.createNotificationChannel(channel);
+			return CHANNEL_ID;
+		} else {
+			return null;
+		}
+	}
 
     @Override
     public void onCreate() {
-        mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
-        data.readPreferences(this);
-        
-        WifiManager wifimanager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		mNM = getSystemService(NotificationManager.class);
+
+		createNotificationChannel();
+
+		ncbProgress = new NotificationCompat.Builder(this, CHANNEL_ID)
+				.setSmallIcon(R.drawable.nicon)
+				.setAutoCancel(true)
+				.setOngoing(true)
+				.setContentTitle("Downloading");
+
+		ncbDone = new NotificationCompat.Builder(this, CHANNEL_ID)
+				.setSmallIcon(R.drawable.nicon)
+				.setAutoCancel(true);
+
+		data.readPreferences(this);
+
+		WifiManager wifimanager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wifilock = wifimanager.createWifiLock(WifiManager.WIFI_MODE_FULL, "LessonDownloader");
         
         PowerManager powermanager = (PowerManager) getSystemService(POWER_SERVICE);
-        powerlock = powermanager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "LessonDownloader");
+		powerlock = powermanager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "LessonDownloader:DownloadWake");
     }
 
     @Override
@@ -134,9 +170,7 @@ public class MediaDownloaderService	extends android.app.Service {
         CharSequence text = getText(intentToPlayVideo == null ? string.file_failed : string.file_downloaded);
 
         mNM.notify(PLAY_NOTIFICATION_ID++,
-                new Notification.Builder(this)
-                        .setSmallIcon(R.drawable.nicon)
-                        .setAutoCancel(true)
+				ncbDone
                         .setContentIntent(PendingIntent.getActivity(this, 0, intentToPlayVideo, 0))
                         .setContentTitle(text)
                         .setContentText(fileInfo.getName())
@@ -161,13 +195,9 @@ public class MediaDownloaderService	extends android.app.Service {
 	private void sendDownloadNotification(int max, int cur, boolean indeterminate, String fileName) {
 		CharSequence text = getText(string.local_service_started);
 
-        mNM.notify(string.DownloadingFile, new Notification.Builder(this)
-                .setSmallIcon(R.drawable.nicon)
-                .setAutoCancel(true)
-                .setOngoing(true)
-                .setProgress(max, cur, indeterminate)
-                .setContentTitle("Downloading")
-                .setContentText(fileName)
+		mNM.notify(string.DownloadingFile,
+				ncbProgress.setContentText(fileName)
+						.setProgress(max, cur, indeterminate)
                 .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, Downloader.class), 0))
                 .build());
 	}
@@ -194,9 +224,10 @@ public class MediaDownloaderService	extends android.app.Service {
         if(!fileInfo.getExisted())
         {
 			Intent intentToPlayVideo = new Intent(Intent.ACTION_DEFAULT);
-	        intentToPlayVideo.setDataAndType(Uri.parse("file://" + fileInfo.getLocalPath()),
+			intentToPlayVideo.setDataAndType(
+					FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", new File(fileInfo.getLocalPath())),
 	        		fileInfo.getLocalPath().contains(".mp3") ? "audio/*" : "video/*");
-	        
+			intentToPlayVideo.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 	        showNotification(fileInfo, intentToPlayVideo);
         }
 	}
@@ -217,9 +248,9 @@ public class MediaDownloaderService	extends android.app.Service {
 	public void setDownloader(Downloader downloader) {
 		this.downloader = downloader;
 	}
-	
-	private void downloadFileList(int offset) {
-		DropBoxFileList.startDownLoadFileList(offset, this);
+
+	private void downloadFileList(int offset, String fileFormat) {
+		DropBoxFileList.startDownLoadFileList(offset, fileFormat, this);
 	}
 	
 	public void pushFileList(List<FileInfo> fileList) {
@@ -297,19 +328,24 @@ public class MediaDownloaderService	extends android.app.Service {
 		}
 	}
 
+	String mediaFormat() {
+		return data.bMp4 && (data.bMp3Low || data.bMp3High) ? "U" :
+				data.bMp4 ? "V" : "A";
+	}
+
 	public void checkNow()
 	{
 		checkAndDeleteOldFilesAndMusic();
-		checkFilesForOffset(0);
+		checkFilesForOffset(0, mediaFormat());
 	}
 
 	public void checkYesterday() {
 		checkAndDeleteOldFilesAndMusic();
-		checkFilesForOffset(-1);
+		checkFilesForOffset(-1, mediaFormat());
 	}
 
-	private void checkFilesForOffset(int offset) {
-		downloadFileList(offset);
+	private void checkFilesForOffset(int offset, String fileFormat) {
+		downloadFileList(offset, fileFormat);
 	}
 	
 	private void showFileNotFoundToast() {

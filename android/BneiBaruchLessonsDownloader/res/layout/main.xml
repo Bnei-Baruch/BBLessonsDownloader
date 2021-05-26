@@ -12,7 +12,8 @@
 		    android:onClick="onDonateClick"
 		    android:text="@string/donate" />
 
-    	<RelativeLayout android:id="@+id/LinearLayout1"
+    <RelativeLayout
+        android:id="@+id/RelativeLayout1"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal">
@@ -21,7 +22,8 @@
 				android:id="@+id/btnCheckNow"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
 				android:layout_alignParentTop="true"
 				android:onClick="onCheckNowClick"
 				android:text="@string/check_now" />
@@ -32,16 +34,29 @@
 				android:id="@+id/btnCheckYesterday"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
 				android:layout_alignParentTop="true"
 				android:onClick="onCheckYesterdayClick"
 				android:text="@string/check_yesterday" />
 
 	</RelativeLayout>
 
-	<ListView android:id="@+id/fileListId"
-		android:layout_width="fill_parent" android:layout_height="fill_parent">
-		<!-- Preview: listitem=@layout/file_li -->
-	</ListView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <ListView
+            android:id="@+id/fileListId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!-- Preview: listitem=@layout/file_li -->
+        </ListView>
+
+        <WebView
+            android:id="@+id/wvShowAds"
+            android:layout_width="match_parent"
+            android:layout_height="100px"
+            android:layout_alignParentBottom="true"></WebView>
+    </RelativeLayout>
 </LinearLayout>
